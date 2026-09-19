@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UFC Pro Database - Live Sync</title>
+    <title>UTC DATABASE - Live Sync</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -120,13 +120,12 @@
         .fight-result-badge { grid-column: 1 / -1; margin-top: 6px; font-size: 0.8rem; padding: 4px; background-color: #080808; border-radius: 4px; border: 1px solid #222; }
         .winner-text { color: var(--accent-gold); font-weight: bold; }
         .empty-msg { text-align: center; grid-column: 1 / -1; color: var(--text-muted); padding: 30px; font-size: 1rem; }
-        .winner-crown { margin-left: 4px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>UFC <span>Pro Database</span></h1>
+        <h1>UTC <span>DATABASE</span></h1>
         <div class="auth-panel">
             <span id="userStatusText">Modo: Visitante</span>
             <button id="authBtn" class="auth-btn" onclick="toggleAuth()">Ser Admin</button>
@@ -229,7 +228,7 @@
                 <h3 style="margin-bottom: 15px; text-transform: uppercase; color: var(--accent-gold); text-align: center;">Crear Evento</h3>
                 <form id="eventForm" onsubmit="addEvent(event)">
                     <div class="form-grid" style="grid-template-columns: 1fr;">
-                        <div class="form-group"><label>Nombre del Evento</label><input type="text" id="eventName" required placeholder="Ej. UFC 300"></div>
+                        <div class="form-group"><label>Nombre del Evento</label><input type="text" id="eventName" required placeholder="Ej. UTC 1"></div>
                         <div class="form-group"><label>Fecha</label><input type="text" id="eventDate" required placeholder="Ej. 13 de Abril"></div>
                         
                         <div style="background: #111; padding: 15px; border-radius: 6px; border: 1px solid #222;">
@@ -320,7 +319,7 @@
         function toggleAuth() {
             if (!isAdmin) {
                 let password = prompt("Contraseña de Administrador:");
-                if (password === "admin123") { isAdmin = true; alert("¡Modo Admin activado!"); }
+                if (password === "UFCUTU_2MH") { isAdmin = true; alert("¡Modo Admin activado!"); }
                 else if (password !== null) { alert("Contraseña incorrecta."); return; }
                 else { return; }
             } else {
