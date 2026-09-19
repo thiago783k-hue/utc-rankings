@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>UFC Pro Database - Live Sync</title>
-    <!-- Carga de librerías de Firebase desde la CDN -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -113,12 +112,15 @@
         .event-title { font-size: 1.2rem; font-weight: 900; text-transform: uppercase; }
         .event-date { color: var(--accent-gold); font-weight: bold; font-size: 0.85rem; }
         .fights-list { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .fight-row { background-color: #111; border: 1px solid #222; border-radius: 6px; padding: 10px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; text-align: center; }
+        .fight-row { background-color: #111; border: 1px solid #222; border-radius: 6px; padding: 12px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; text-align: center; }
         .fighter-corner-red { font-weight: bold; font-size: 0.95rem; text-transform: uppercase; color: #ff4444; }
         .fighter-corner-blue { font-weight: bold; font-size: 0.95rem; text-transform: uppercase; color: #4488ff; }
         .corner-sub { font-size: 0.65rem; color: var(--text-muted); font-style: italic; }
         .vs-badge { background-color: #222; color: var(--accent-gold); padding: 4px 8px; border-radius: 15px; font-weight: 900; font-size: 0.75rem; border: 1px solid #333; }
+        .fight-result-badge { grid-column: 1 / -1; margin-top: 6px; font-size: 0.8rem; padding: 4px; background-color: #080808; border-radius: 4px; border: 1px solid #222; }
+        .winner-text { color: var(--accent-gold); font-weight: bold; }
         .empty-msg { text-align: center; grid-column: 1 / -1; color: var(--text-muted); padding: 30px; font-size: 1rem; }
+        .winner-crown { margin-left: 4px; }
     </style>
 </head>
 <body>
@@ -177,7 +179,7 @@
                         <div class="form-group full-width" style="grid-column: 1 / -1;"><label>Estilo / Armas</label><input type="text" id="style"></div>
                     </div>
                     <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button type="button" class="action-btn" style="background-color: #333;" onclick="switchTabToRoster()">Cancelar</button>
+                        <button type="button" class="action-btn" style="background-color: #333;" onclick="switchTab('roster')">Cancelar</button>
                         <button type="submit" class="action-btn">Guardar</button>
                     </div>
                 </form>
@@ -227,18 +229,41 @@
                 <h3 style="margin-bottom: 15px; text-transform: uppercase; color: var(--accent-gold); text-align: center;">Crear Evento</h3>
                 <form id="eventForm" onsubmit="addEvent(event)">
                     <div class="form-grid" style="grid-template-columns: 1fr;">
-                        <div class="form-group"><label>Nombre del Evento</label><input type="text" id="eventName" required placeholder="Ej. UFC Fight Night"></div>
-                        <div class="form-group"><label>Fecha</label><input type="text" id="eventDate" required placeholder="Ej. Próximamente"></div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div class="form-group"><label>Esquina Roja</label><select id="fighterRed" required></select></div>
-                            <div class="form-group"><label>Esquina Azul</label><select id="fighterBlue" required></select></div>
+                        <div class="form-group"><label>Nombre del Evento</label><input type="text" id="eventName" required placeholder="Ej. UFC 300"></div>
+                        <div class="form-group"><label>Fecha</label><input type="text" id="eventDate" required placeholder="Ej. 13 de Abril"></div>
+                        
+                        <div style="background: #111; padding: 15px; border-radius: 6px; border: 1px solid #222;">
+                            <label style="color: var(--accent-gold); margin-bottom: 10px;">Añadir Pelea:</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                                <div class="form-group"><label>Esquina Roja</label><select id="fighterRed"></select></div>
+                                <div class="form-group"><label>Esquina Azul</label><select id="fighterBlue"></select></div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div class="form-group">
+                                    <label>Estado / Resultado</label>
+                                    <select id="fightStatus">
+                                        <option value="pending">⏳ En Espera (Próximamente)</option>
+                                        <option value="red">🔴 Ganó Roja</option>
+                                        <option value="blue">🔵 Ganó Azul</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Método de Victoria</label>
+                                    <select id="fightMethod">
+                                        <option value="-">-</option>
+                                        <option value="KO / TKO">KO / TKO</option>
+                                        <option value="Sumisión">Sumisión</option>
+                                        <option value="Decisión Unánime">Decisión Unánime</option>
+                                        <option value="Decisión Dividida">Decisión Dividida</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button type="button" class="action-btn" style="background-color: #222; color: var(--accent-gold); border: 1px solid #444; margin-top: 10px;" onclick="addFightToCurrentList()">➕ Agregar este combate</button>
                         </div>
-                        <div class="form-group" style="margin-top: 10px;">
-                            <button type="button" class="action-btn" style="background-color: #222; color: var(--accent-gold); border: 1px solid #444;" onclick="addFightToCurrentList()">➕ Añadir Combate</button>
-                        </div>
+
                         <div class="form-group">
                             <label>Combates Agregados:</label>
-                            <div id="tempFightsList" style="background-color: #111; padding: 10px; border-radius: 4px; border: 1px solid #222; min-height: 40px; font-size: 0.85rem; color: var(--text-muted);">Ningún combate.</div>
+                            <div id="tempFightsList" style="background-color: #111; padding: 10px; border-radius: 4px; border: 1px solid #222; min-height: 40px; font-size: 0.85rem; color: var(--text-muted);">Ningún combate en la lista.</div>
                         </div>
                     </div>
                     <button type="submit" style="margin-top: 20px;">Publicar Cartelera</button>
@@ -248,7 +273,6 @@
     </div>
 
     <script>
-        // Configuración oficial conectada a tu proyecto ufc-rankings
         const firebaseConfig = {
             apiKey: "AIzaSyC4ot99oNRT6b86v2tnnewkr-XNe5rz6uA",
             authDomain: "ufc-rankings.firebaseapp.com",
@@ -268,7 +292,6 @@
         let events = [];
         let tempFights = [];
 
-        // Escuchar cambios en tiempo real desde Firebase Realtime Database
         db.ref('ufc_data/fighters').on('value', (snapshot) => {
             const data = snapshot.val();
             fighters = data ? Object.values(data) : getInitialFightersData();
@@ -287,13 +310,7 @@
             return [
                 { id: 1, name: "Thiago Monzón", record: "28-1-1", age: "17", height: "5'6\" (170 cm)", weight: "205 lbs", reach: "172 cm", stance: "Cambiada", nationality: "URU", style: "BJJ, Taekwondo y Karate tradicional", rankings: { "Pesado (Heavyweight)": "2", "Wélter (Welterweight)": "3", "Ligero (Lightweight)": "2", "Pluma (Featherweight)": "7", "Gallo (Bantamweight)": "7", "Semipesado (Light Heavyweight)": "C" } },
                 { id: 2, name: "Santiago Vivas", record: "14-0-2", age: "18", height: "5'6\" (170 cm)", weight: "205 lbs", reach: "170 cm", stance: "Ortodoxa", nationality: "URU", style: "Taekwondo, Karate, Kenpo y Boxeo", rankings: { "Pesado (Heavyweight)": "6", "Wélter (Welterweight)": "1", "Ligero (Lightweight)": "1", "Pluma (Featherweight)": "1", "Gallo (Bantamweight)": "1", "Semipesado (Light Heavyweight)": "1" } },
-                { id: 3, name: "Santiago Carro", record: "31-0-0", age: "17", height: "6'1\" (185 cm)", weight: "205 lbs", reach: "190 cm", stance: "Ortodoxa", nationality: "URU", style: "Sambo, Wrestling, Grappling y Muay Thai", rankings: { "Pesado (Heavyweight)": "3", "Wélter (Welterweight)": "C", "Ligero (Lightweight)": "C", "Pluma (Featherweight)": "3", "Gallo (Bantamweight)": "3", "Semipesado (Light Heavyweight)": "2" } },
-                { id: 4, name: "Lucca Ignacio", record: "6-2-0", age: "16", height: "6’0” (182cm)", weight: "205 lbs", reach: "200 cm", stance: "Ortodoxa", nationality: "URU", style: "Boxeo, Lucha Libre Deportiva y Sambo", rankings: { "Pesado (Heavyweight)": "C", "Wélter (Welterweight)": "2", "Ligero (Lightweight)": "3", "Pluma (Featherweight)": "8", "Gallo (Bantamweight)": "8", "Semipesado (Light Heavyweight)": "3" } },
-                { id: 5, name: "Joaquín DLS", record: "18-1-0", age: "17", height: "5'8\" (173 cm)", weight: "205 lbs", reach: "173 cm", stance: "Zurda", nationality: "URU", style: "Sambo, Grappling, Taekwondo y Kickboxing", rankings: { "Pesado (Heavyweight)": "4", "Wélter (Welterweight)": "4", "Ligero (Lightweight)": "4", "Pluma (Featherweight)": "5", "Gallo (Bantamweight)": "C", "Semipesado (Light Heavyweight)": "4" } },
-                { id: 6, name: "Benjamín Verde", record: "15-1-0", age: "17", height: "5'9\" (179 cm)", weight: "205 lbs", reach: "182 cm", stance: "Zurda", nationality: "URU", style: "Boxeo, Kickboxing, Capoeira y Taekwondo", rankings: { "Pesado (Heavyweight)": "5", "Wélter (Welterweight)": "5", "Ligero (Lightweight)": "5", "Pluma (Featherweight)": "2", "Gallo (Bantamweight)": "5", "Semipesado (Light Heavyweight)": "5" } },
-                { id: 7, name: "Santino Núñez", record: "37-12-1", age: "17", height: "5'5\" (167 cm)", weight: "205 lbs", reach: "170 cm", stance: "Zurda", nationality: "URU", style: "Boxeo", rankings: { "Pesado (Heavyweight)": "8", "Wélter (Welterweight)": "8", "Ligero (Lightweight)": "6", "Pluma (Featherweight)": "4", "Gallo (Bantamweight)": "4", "Semipesado (Light Heavyweight)": "6" } },
-                { id: 8, name: "Lucas Rodríguez", record: "8-2-4", age: "17", height: "5'8\" (176 cm)", weight: "205 lbs", reach: "180 cm", stance: "Ortodoxa", nationality: "URU", style: "Boxeo", rankings: { "Pesado (Heavyweight)": "1", "Wélter (Welterweight)": "6", "Ligero (Lightweight)": "7", "Pluma (Featherweight)": "6", "Gallo (Bantamweight)": "6", "Semipesado (Light Heavyweight)": "7" } },
-                { id: 9, name: "Felipe Francia", record: "11-0-0", age: "16", height: "5'8\" (179 cm)", weight: "155 lbs", reach: "185 cm", stance: "Ortodoxa", nationality: "URU", style: "Boxeo, Kickboxing, Wrestling", rankings: { "Pesado (Heavyweight)": "7", "Wélter (Welterweight)": "7", "Ligero (Lightweight)": "8", "Pluma (Featherweight)": "C", "Gallo (Bantamweight)": "2", "Semipesado (Light Heavyweight)": "UNRANKED" } }
+                { id: 3, name: "Santiago Carro", record: "31-0-0", age: "17", height: "6'1\" (185 cm)", weight: "205 lbs", reach: "190 cm", stance: "Ortodoxa", nationality: "URU", style: "Sambo, Wrestling, Grappling y Muay Thai", rankings: { "Pesado (Heavyweight)": "3", "Wélter (Welterweight)": "C", "Ligero (Lightweight)": "C", "Pluma (Featherweight)": "3", "Gallo (Bantamweight)": "3", "Semipesado (Light Heavyweight)": "2" } }
             ];
         }
 
@@ -308,7 +325,7 @@
                 else { return; }
             } else {
                 isAdmin = false;
-                switchTabToRoster();
+                switchTab('roster');
                 alert("Sesión cerrada.");
             }
             updateAuthUI();
@@ -331,20 +348,31 @@
             document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
 
-            if (tabName === 'roster') { document.getElementById('roster-section').classList.add('active'); event.currentTarget.classList.add('active'); renderFighters(); }
-            else if (tabName === 'rankings') { document.getElementById('rankings-section').classList.add('active'); event.currentTarget.classList.add('active'); renderRankings(); }
-            else if (tabName === 'events') { document.getElementById('events-section').classList.add('active'); event.currentTarget.classList.add('active'); renderEvents(); }
-            else if (tabName === 'register' && isAdmin) { document.getElementById('register-section').classList.add('active'); event.currentTarget.classList.add('active'); }
-            else if (tabName === 'rankAdmin' && isAdmin) { document.getElementById('rank-admin-section').classList.add('active'); event.currentTarget.classList.add('active'); populateRankAdminSelects(); }
-            else if (tabName === 'createEvent' && isAdmin) { document.getElementById('create-event-section').classList.add('active'); event.currentTarget.classList.add('active'); populateFighterSelects(); }
+            if (tabName === 'roster') { document.getElementById('roster-section').classList.add('active'); document.querySelectorAll('.tab-btn')[0].classList.add('active'); renderFighters(); }
+            else if (tabName === 'rankings') { document.getElementById('rankings-section').classList.add('active'); document.querySelectorAll('.tab-btn')[1].classList.add('active'); renderRankings(); }
+            else if (tabName === 'events') { document.getElementById('events-section').classList.add('active'); document.querySelectorAll('.tab-btn')[2].classList.add('active'); renderEvents(); }
+            else if (tabName === 'register' && isAdmin) { document.getElementById('register-section').classList.add('active'); document.getElementById('tabRegisterBtn').classList.add('active'); }
+            else if (tabName === 'rankAdmin' && isAdmin) { document.getElementById('rank-admin-section').classList.add('active'); document.getElementById('tabRankAdminBtn').classList.add('active'); populateRankAdminSelects(); }
+            else if (tabName === 'createEvent' && isAdmin) { document.getElementById('create-event-section').classList.add('active'); document.getElementById('tabEventBtn').classList.add('active'); populateFighterSelects(); }
         }
 
-        function switchTabToRoster() {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('roster-section').classList.add('active');
-            document.querySelectorAll('.tab-btn')[0].classList.add('active');
-            renderFighters();
+        function editFighter(id) {
+            const f = fighters.find(item => item.id === id);
+            if (!f) return;
+
+            document.getElementById('fighterId').value = f.id;
+            document.getElementById('name').value = f.name || '';
+            document.getElementById('record').value = f.record || '';
+            document.getElementById('age').value = f.age || '';
+            document.getElementById('height').value = f.height || '';
+            document.getElementById('weight').value = f.weight || '';
+            document.getElementById('reach').value = f.reach || '';
+            document.getElementById('stance').value = f.stance || '';
+            document.getElementById('nationality').value = f.nationality || '';
+            document.getElementById('style').value = f.style || '';
+
+            document.getElementById('formTitle').innerText = "Editar Luchador";
+            switchTab('register');
         }
 
         function saveFighter(e) {
@@ -365,21 +393,25 @@
                 stance: document.getElementById('stance').value,
                 nationality: document.getElementById('nationality').value,
                 style: document.getElementById('style').value,
-                rankings: existing ? existing.rankings : {}
+                rankings: existing ? (existing.rankings || {}) : {}
             };
 
-            if (idField) { fighters = fighters.map(f => f.id === fighterData.id ? fighterData : f); } 
-            else { fighters.push(fighterData); }
+            if (idField) { 
+                fighters = fighters.map(f => f.id === fighterData.id ? fighterData : f); 
+            } else { 
+                fighters.push(fighterData); 
+            }
 
             syncFighters();
             document.getElementById('fighterForm').reset();
             document.getElementById('fighterId').value = '';
-            switchTabToRoster();
+            document.getElementById('formTitle').innerText = "Registrar / Editar Luchador";
+            switchTab('roster');
         }
 
         function deleteFighter(id) {
             if (!isAdmin) return;
-            if (confirm("¿Eliminar este luchador del sistema?")) {
+            if (confirm("¿Seguro que deseas eliminar este luchador del sistema?")) {
                 fighters = fighters.filter(f => f.id !== id);
                 syncFighters();
             }
@@ -450,8 +482,8 @@
             else { targetFighter.rankings[category] = newPos; }
 
             syncFighters();
-            alert(`¡Ranking de ${targetFighter.name} actualizado en tiempo real!`);
-            switchTabToRoster();
+            alert(`¡Ranking de ${targetFighter.name} actualizado!`);
+            switchTab('roster');
         }
 
         function renderRankings() {
@@ -511,16 +543,41 @@
         function addFightToCurrentList() {
             const red = document.getElementById('fighterRed').value;
             const blue = document.getElementById('fighterBlue').value;
+            const status = document.getElementById('fightStatus').value;
+            const method = document.getElementById('fightMethod').value;
+
             if (red === blue) { alert("Un luchador no puede pelear contra sí mismo."); return; }
-            tempFights.push({ red, blue });
-            document.getElementById('tempFightsList').innerHTML = tempFights.map((f, i) => 
-                `<div>#${i+1}: <span style="color:#ff4444;">${f.red}</span> vs <span style="color:#4488ff;">${f.blue}</span></div>`
-            ).join('');
+            
+            tempFights.push({ red, blue, status, method });
+            renderTempFightsList();
+        }
+
+        function removeTempFight(index) {
+            tempFights.splice(index, 1);
+            renderTempFightsList();
+        }
+
+        function renderTempFightsList() {
+            const listContainer = document.getElementById('tempFightsList');
+            if (tempFights.length === 0) {
+                listContainer.innerHTML = 'Ningún combate en la lista.';
+                return;
+            }
+
+            listContainer.innerHTML = tempFights.map((f, i) => {
+                let resText = f.status === 'pending' ? '⏳ En Espera' : (f.status === 'red' ? `🔴 Ganador: ${f.red}` : `🔵 Ganador: ${f.blue}`);
+                return `
+                    <div style="display:flex; justify-between; align-items:center; margin-bottom: 6px; border-bottom: 1px solid #222; padding-bottom: 4px;">
+                        <span>#${i+1}: <b style="color:#ff4444;">${f.red}</b> vs <b style="color:#4488ff;">${f.blue}</b> (${resText})</span>
+                        <button type="button" style="background:#ff4444; color:white; border:none; padding:2px 6px; border-radius:3px; cursor:pointer;" onclick="removeTempFight(${i})">X</button>
+                    </div>
+                `;
+            }).join('');
         }
 
         function addEvent(e) {
             e.preventDefault();
-            if (!isAdmin || tempFights.length === 0) return;
+            if (!isAdmin || tempFights.length === 0) { alert("Debes agregar al menos una pelea al evento."); return; }
 
             events.push({
                 id: Date.now(),
@@ -532,6 +589,7 @@
             syncEvents();
             document.getElementById('eventForm').reset();
             tempFights = [];
+            renderTempFightsList();
             switchTab('events');
         }
 
@@ -541,19 +599,34 @@
             if (events.length === 0) { container.innerHTML = `<div class="empty-msg">No hay eventos programados.</div>`; return; }
             
             events.forEach(ev => {
-                let fightsHTML = ev.fights.map(f => `
-                    <div class="fight-row">
-                        <div><div class="fighter-corner-red">${f.red}</div><div class="corner-sub">Esquina Roja</div></div>
-                        <div class="vs-badge">VS</div>
-                        <div><div class="fighter-corner-blue">${f.blue}</div><div class="corner-sub">Esquina Azul</div></div>
-                    </div>
-                `).join('');
+                let fightsHTML = ev.fights.map(f => {
+                    let resultBadge = '';
+                    if (f.status === 'pending') {
+                        resultBadge = `<div class="fight-result-badge" style="color: var(--accent-gold);">⏳ Estado: En Espera</div>`;
+                    } else if (f.status === 'red') {
+                        resultBadge = `<div class="fight-result-badge"><span class="winner-text">🔴 Ganador: ${f.red}</span> (Vía: ${f.method || 'N/A'})</div>`;
+                    } else if (f.status === 'blue') {
+                        resultBadge = `<div class="fight-result-badge"><span class="winner-text">🔵 Ganador: ${f.blue}</span> (Vía: ${f.method || 'N/A'})</div>`;
+                    }
+
+                    let redCrown = f.status === 'red' ? '👑' : '';
+                    let blueCrown = f.status === 'blue' ? '👑' : '';
+
+                    return `
+                        <div class="fight-row">
+                            <div><div class="fighter-corner-red">${f.red} ${redCrown}</div><div class="corner-sub">Esquina Roja</div></div>
+                            <div class="vs-badge">VS</div>
+                            <div><div class="fighter-corner-blue">${f.blue} ${blueCrown}</div><div class="corner-sub">Esquina Azul</div></div>
+                            ${resultBadge}
+                        </div>
+                    `;
+                }).join('');
 
                 container.innerHTML += `
                     <div class="event-card">
                         <div class="event-header">
                             <div><div class="event-title">${ev.name}</div><div class="event-date">📅 ${ev.date}</div></div>
-                            ${isAdmin ? `<button class="card-btn delete-btn" style="padding: 5px 10px; border-radius: 4px;" onclick="deleteEvent(${ev.id})">Borrar</button>` : ''}
+                            ${isAdmin ? `<button class="card-btn delete-btn" style="padding: 5px 10px; border-radius: 4px; max-width: 100px;" onclick="deleteEvent(${ev.id})">Borrar Evento</button>` : ''}
                         </div>
                         <div class="fights-list">${fightsHTML}</div>
                     </div>
@@ -563,8 +636,10 @@
 
         function deleteEvent(id) {
             if (!isAdmin) return;
-            events = events.filter(e => e.id !== id);
-            syncEvents();
+            if (confirm("¿Seguro que deseas borrar este evento completo?")) {
+                events = events.filter(e => e.id !== id);
+                syncEvents();
+            }
         }
     </script>
 </body>
