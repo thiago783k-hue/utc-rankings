@@ -58,24 +58,29 @@
         .btn-dark { background: #222; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
         .btn-dark:hover { background: var(--accent-gold); color: #000; }
 
-        /* --- HERO & NEWS SECTION --- */
+        /* --- ESTELAR / HERO SECTION --- */
         .hero-section {
-            position: relative; width: 100%; height: 90vh; min-height: 600px;
+            position: relative; width: 100%; height: 100vh; min-height: 600px;
             background-size: cover; background-position: center;
-            display: flex; align-items: center; justify-content: center; padding-top: 60px;
+            display: flex; align-items: center; justify-content: center; text-align: center;
         }
         .hero-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(5,5,5,1) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(5,5,5,1) 100%);
         }
-        .news-container {
-            position: relative; z-index: 10; width: 90%; max-width: 800px; height: 70%;
-            background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px);
-            border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; overflow: hidden;
+        .estelar-content {
+            position: relative; z-index: 10; padding: 0 20px;
         }
-        .news-header { background: rgba(0,0,0,0.8); padding: 15px; text-align: center; font-family: var(--font-title); font-size: 1.5rem; color: var(--accent-gold); border-bottom: 1px solid var(--accent-red); }
-        .news-iframe { flex-grow: 1; width: 100%; border: none; background: #fff; }
+        .evento-titulo { font-family: var(--font-title); font-size: 2.5rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        .peleadores-main { font-family: var(--font-title); font-size: 4.5rem; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 5px 20px rgba(0,0,0,0.9); }
+        .evento-subtitulo { font-family: var(--font-title); font-size: 1.8rem; font-style: italic; color: #ccc; margin-bottom: 40px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+        .btn-scroll { 
+            font-family: var(--font-title); font-size: 1.2rem; text-transform: uppercase; 
+            padding: 15px 35px; background: var(--accent-red); color: white; border: none; 
+            border-radius: 50px; cursor: pointer; font-weight: 700; transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(230,25,25,0.4);
+        }
+        .btn-scroll:hover { background: var(--accent-red-hover); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(230,25,25,0.6); }
 
         /* --- SECTION LAYOUT --- */
         .section-container { max-width: 1400px; margin: 0 auto; padding: 80px 20px; }
@@ -89,12 +94,7 @@
         .events-grid { display: flex; flex-direction: column; gap: 40px; max-width: 1000px; margin: 0 auto; }
         .event-card { background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s; }
         
-        /* Estilo especial para la última cartelera (Destacada) */
-        .event-card.featured { 
-            border: 2px solid var(--accent-gold); 
-            box-shadow: 0 15px 50px rgba(212, 175, 55, 0.15); 
-            transform: scale(1.02);
-        }
+        .event-card.featured { border: 2px solid var(--accent-gold); box-shadow: 0 15px 50px rgba(212, 175, 55, 0.15); transform: scale(1.02); }
         .event-poster { width: 100%; display: block; object-fit: cover; border-bottom: 3px solid var(--accent-red); }
         .event-card.featured .event-poster { height: 500px; }
         .event-card:not(.featured) .event-poster { height: 250px; opacity: 0.8; }
@@ -140,7 +140,8 @@
         .fighter-card:hover .fighter-img-container img { opacity: 1; }
         .fighter-info { padding: 15px; text-align: center; }
         .fighter-info-name { font-family: var(--font-title); font-size: 1.6rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
-        .fighter-info-record { color: var(--accent-gold); font-weight: 900; font-size: 1.1rem; }
+        .fighter-info-record { color: var(--accent-gold); font-weight: 900; font-size: 1.1rem; margin-bottom: 5px; }
+        .icono-bandera { font-size: 1.2rem; margin-left: 5px; }
 
         /* --- MODALS (POPUPS) --- */
         .modal-overlay { 
@@ -201,6 +202,7 @@
             .form-grid { grid-template-columns: 1fr; }
             .nav-links { display: none; }
             .event-card.featured .event-poster { height: 300px; }
+            .peleadores-main { font-size: 3rem; }
         }
     </style>
 </head>
@@ -210,7 +212,7 @@
     <nav>
         <div class="brand">UTC <span>DB</span></div>
         <div class="nav-links">
-            <a href="#inicio">Inicio</a>
+            <a href="#inicio">Estelar</a>
             <a href="#eventos">Eventos</a>
             <a href="#rankings">Rankings</a>
             <a href="#roster">Roster</a>
@@ -226,12 +228,14 @@
         </div>
     </nav>
 
-    <!-- HERO & NEWS -->
+    <!-- ESTELAR (HERO SECTION) -->
     <div id="inicio" class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1544365558-35aa4afcf11f?q=80&w=2036&auto=format&fit=crop');">
         <div class="hero-overlay"></div>
-        <div class="news-container">
-            <div class="news-header">ÚLTIMAS NOTICIAS UTC</div>
-            <iframe id="newsIframe" class="news-iframe" src="" allowfullscreen></iframe>
+        <div class="estelar-content">
+            <h3 id="displayHeroTitle" class="evento-titulo">UTC 4</h3>
+            <h1 id="displayHeroMain" class="peleadores-main">THIAGO Monzón VS Joaquin DLS</h1>
+            <p id="displayHeroSub" class="evento-subtitulo">Choque de campeones</p>
+            <button class="btn-scroll" onclick="document.getElementById('eventos').scrollIntoView({ behavior: 'smooth' })">Mira la cartelera completa</button>
         </div>
     </div>
 
@@ -274,11 +278,13 @@
             <div class="admin-form-container">
                 <h2 id="adminModalTitle" style="color: var(--accent-gold); margin-bottom: 20px; font-family: var(--font-title); text-transform: uppercase;">Admin</h2>
                 
-                <!-- Formulario: Configurar Inicio -->
+                <!-- Formulario: Configurar Inicio Estelar -->
                 <form id="formSettings" style="display: none;" onsubmit="saveSettings(event)">
-                    <div class="form-group full"><label>URL Imagen de Fondo (Inicio)</label><input type="text" id="setHeroImg" placeholder="Link de una imagen..."></div>
-                    <div class="form-group full"><label>Link Google Docs (Noticias)</label><input type="text" id="setDocLink" placeholder="Link del Google Docs..."></div>
-                    <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Configuración</button>
+                    <div class="form-group full"><label>URL Imagen de Fondo (Estelar)</label><input type="text" id="setHeroImg" placeholder="Link de una imagen..."></div>
+                    <div class="form-group"><label>Título Evento (Ej: UTC 4)</label><input type="text" id="setHeroTitle"></div>
+                    <div class="form-group full"><label>Peleadores (Ej: THIAGO Monzón VS Joaquin DLS)</label><input type="text" id="setHeroMain"></div>
+                    <div class="form-group full"><label>Subtítulo (Ej: Choque de campeones)</label><input type="text" id="setHeroSub"></div>
+                    <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Inicio</button>
                 </form>
 
                 <!-- Formulario: Registrar/Editar Peleador -->
@@ -290,23 +296,22 @@
                             <small style="color:#888;">El récord exacto. Se actualizará solo al publicar eventos nuevos.</small>
                         </div>
                         <div class="form-group full"><label>URL Foto de Perfil</label><input type="text" id="f_img" placeholder="Link de imagen principal"></div>
+                        <div class="form-group"><label>Nacionalidad (Siglas Ej: URU)</label><input type="text" id="f_nation"></div>
+                        <div class="form-group"><label>Bandera (Emoji Ej: 🇦🇬 o 🇺🇾)</label><input type="text" id="f_flag"></div>
                         <div class="form-group"><label>Edad</label><input type="text" id="f_age"></div>
                         <div class="form-group"><label>Altura</label><input type="text" id="f_height"></div>
                         <div class="form-group"><label>Peso</label><input type="text" id="f_weight"></div>
                         <div class="form-group"><label>Alcance</label><input type="text" id="f_reach"></div>
                         <div class="form-group"><label>Guardia</label><input type="text" id="f_stance"></div>
-                        <div class="form-group"><label>Nacionalidad</label><input type="text" id="f_nation"></div>
                         <div class="form-group full"><label>Estilo / Armas</label><input type="text" id="f_style"></div>
                         
-                        <!-- NUEVOS CAMPOS: Bio y Galeria -->
                         <div class="form-group full">
                             <label>Biografía / Hazañas</label>
                             <textarea id="f_bio" placeholder="Escribe aquí los logros, historia y hazañas del peleador..."></textarea>
                         </div>
                         <div class="form-group full">
                             <label>Galería Adicional (Imágenes separadas por coma)</label>
-                            <input type="text" id="f_gallery" placeholder="Link1.jpg, Link2.jpg, Link3.png">
-                            <small style="color:#888;">Pega los links de las imágenes separados por una coma (,)</small>
+                            <input type="text" id="f_gallery" placeholder="Link1.jpg, Link2.jpg">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Peleador</button>
@@ -395,7 +400,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let isAdmin = false; let fighters = []; let events = []; let settings = { heroImg: '', docLink: '' }; let tempFights = [];
+        let isAdmin = false; let fighters = []; let events = []; let settings = { heroImg: '', heroTitle: 'UTC', heroMain: 'PELEA ESTELAR', heroSub: 'Pronto...' }; let tempFights = [];
 
         db.ref('ufc_data/settings').on('value', snap => { if(snap.val()) settings = snap.val(); applySettings(); });
         db.ref('ufc_data/fighters').on('value', snap => { fighters = snap.val() ? Object.values(snap.val()) : []; renderRoster(); renderRankings(); });
@@ -422,9 +427,9 @@
 
         function applySettings() {
             if(settings.heroImg) document.getElementById('inicio').style.backgroundImage = `url('${settings.heroImg}')`;
-            let link = settings.docLink || '';
-            if(link.includes('docs.google.com') && !link.includes('/pub') && !link.includes('/preview')) link = link.replace(/\/edit.*$/, '/preview');
-            document.getElementById('newsIframe').src = link;
+            document.getElementById('displayHeroTitle').innerText = settings.heroTitle || 'UTC';
+            document.getElementById('displayHeroMain').innerText = settings.heroMain || 'PELEA ESTELAR';
+            document.getElementById('displayHeroSub').innerText = settings.heroSub || '';
         }
 
         function closeModal(e, modalId) { if(e.target.id === modalId) document.getElementById(modalId).classList.remove('active'); }
@@ -435,8 +440,11 @@
             ['formSettings', 'formFighter', 'formRank', 'formEvent'].forEach(id => document.getElementById(id).style.display = 'none');
             
             if(type === 'settings') {
-                document.getElementById('adminModalTitle').innerText = 'Configuración Inicio'; document.getElementById('formSettings').style.display = 'block';
-                document.getElementById('setHeroImg').value = settings.heroImg || ''; document.getElementById('setDocLink').value = settings.docLink || '';
+                document.getElementById('adminModalTitle').innerText = 'Configuración Inicio Estelar'; document.getElementById('formSettings').style.display = 'block';
+                document.getElementById('setHeroImg').value = settings.heroImg || ''; 
+                document.getElementById('setHeroTitle').value = settings.heroTitle || '';
+                document.getElementById('setHeroMain').value = settings.heroMain || '';
+                document.getElementById('setHeroSub').value = settings.heroSub || '';
             } else if(type === 'fighter') {
                 document.getElementById('adminModalTitle').innerText = 'Registrar Peleador'; document.getElementById('formFighter').style.display = 'block';
                 document.getElementById('formFighter').reset(); document.getElementById('f_id').value = '';
@@ -457,7 +465,10 @@
 
         function saveSettings(e) {
             e.preventDefault();
-            settings.heroImg = document.getElementById('setHeroImg').value; settings.docLink = document.getElementById('setDocLink').value;
+            settings.heroImg = document.getElementById('setHeroImg').value; 
+            settings.heroTitle = document.getElementById('setHeroTitle').value;
+            settings.heroMain = document.getElementById('setHeroMain').value;
+            settings.heroSub = document.getElementById('setHeroSub').value;
             syncSettings(); document.getElementById('adminModal').classList.remove('active');
         }
 
@@ -469,11 +480,12 @@
             let fighterData = {
                 id: idField ? parseInt(idField) : Date.now(),
                 name: document.getElementById('f_name').value,
-                record: document.getElementById('f_record').value, // Récord manual fijo
+                record: document.getElementById('f_record').value,
                 imageUrl: document.getElementById('f_img').value || 'https://via.placeholder.com/400x500/111/444?text=FOTO',
                 age: document.getElementById('f_age').value, height: document.getElementById('f_height').value,
                 weight: document.getElementById('f_weight').value, reach: document.getElementById('f_reach').value,
                 stance: document.getElementById('f_stance').value, nationality: document.getElementById('f_nation').value,
+                flag: document.getElementById('f_flag').value, // <--- Nueva variable Bandera
                 style: document.getElementById('f_style').value, bio: document.getElementById('f_bio').value,
                 gallery: document.getElementById('f_gallery').value, rankings: existing ? (existing.rankings || {}) : {}
             };
@@ -490,6 +502,7 @@
             document.getElementById('f_age').value = f.age || ''; document.getElementById('f_height').value = f.height || '';
             document.getElementById('f_weight').value = f.weight || ''; document.getElementById('f_reach').value = f.reach || '';
             document.getElementById('f_stance').value = f.stance || ''; document.getElementById('f_nation').value = f.nationality || '';
+            document.getElementById('f_flag').value = f.flag || ''; // <--- Cargar Bandera
             document.getElementById('f_style').value = f.style || ''; document.getElementById('f_bio').value = f.bio || '';
             document.getElementById('f_gallery').value = f.gallery || '';
         }
@@ -512,7 +525,9 @@
                         <div class="fighter-info">
                             <div class="fighter-info-name">${f.name}</div>
                             <div class="fighter-info-record">${f.record || '0-0-0'}</div>
-                            <div style="font-size:0.8rem; color:#888; margin-top:5px;">${f.nationality || 'URU'}</div>
+                            <div style="font-size:0.9rem; color:#888; margin-top:5px; display:flex; justify-content:center; align-items:center;">
+                                ${f.nationality || ''} <span class="icono-bandera">${f.flag || ''}</span>
+                            </div>
                         </div>
                     </div>`;
             });
@@ -521,7 +536,6 @@
         function openFighterProfile(id) {
             let f = fighters.find(x => x.id === id); if(!f) return;
             
-            // Historial desde los eventos
             let historyHTML = '';
             events.forEach(ev => {
                 ev.fights.forEach(fight => {
@@ -539,7 +553,6 @@
             });
             if(!historyHTML) historyHTML = '<div style="color:#888; font-size:0.9rem;">Sin historial registrado.</div>';
 
-            // Generar Galería
             let galleryHTML = '';
             if(f.gallery) {
                 let images = f.gallery.split(',').map(url => url.trim()).filter(url => url !== '');
@@ -552,7 +565,9 @@
                     <div class="profile-title-area">
                         <div class="profile-name">${f.name}</div>
                         <div class="profile-record">REC: ${f.record || '0-0-0'}</div>
-                        <div style="color: #888; margin-top:5px; font-weight:bold;">${f.nationality || ''}</div>
+                        <div style="color: #888; margin-top:5px; font-weight:bold; font-size:1.2rem; display:flex; align-items:center;">
+                            ${f.nationality || ''} <span class="icono-bandera" style="margin-left:8px;">${f.flag || ''}</span>
+                        </div>
                     </div>
                 </div>
                 <div class="profile-body">
@@ -648,7 +663,6 @@
                 fights: [...tempFights]
             };
 
-            // ACTUALIZAR RÉCORDS SOLO SI ES UN EVENTO NUEVO
             if(isNew) {
                 let recordsUpdated = false;
                 evObj.fights.forEach(fight => {
@@ -663,10 +677,9 @@
                         if(loser) { let [w,l,d] = (loser.record || '0-0-0').split('-').map(Number); loser.record = `${w}-${l+1}-${d}`; recordsUpdated = true; }
                     }
                 });
-                if(recordsUpdated) syncFighters(); // Guardar a la DB de peleadores
+                if(recordsUpdated) syncFighters();
                 events.push(evObj);
             } else {
-                // Si es edición, solo actualizamos el evento, NO tocamos los récords.
                 events = events.map(x => x.id === finalId ? evObj : x);
             }
 
@@ -681,7 +694,6 @@
             document.getElementById('ev_id').value = ev.id; document.getElementById('ev_name').value = ev.name;
             document.getElementById('ev_date').value = ev.date; document.getElementById('ev_img').value = ev.imageUrl || '';
             
-            // Llenar selectores para añadir peleas nuevas si se quiere
             let sRed = document.getElementById('ev_red'); let sBlue = document.getElementById('ev_blue');
             sRed.innerHTML = ''; sBlue.innerHTML = '';
             fighters.forEach(f => { let opt = `<option value="${f.name}">${f.name}</option>`; sRed.innerHTML += opt; sBlue.innerHTML += opt; });
@@ -698,10 +710,9 @@
         function renderEvents() {
             let grid = document.getElementById('eventsGrid'); grid.innerHTML = '';
             
-            let sortedEvents = [...events].reverse(); // El más nuevo primero
+            let sortedEvents = [...events].reverse(); 
             sortedEvents.forEach((ev, index) => {
-                let isFeatured = index === 0; // El primer elemento es el destacado
-                
+                let isFeatured = index === 0; 
                 let posterHTML = ev.imageUrl ? `<img src="${ev.imageUrl}" class="event-poster">` : '';
 
                 let fightsHTML = ev.fights.map(f => {
