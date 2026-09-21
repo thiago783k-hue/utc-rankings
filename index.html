@@ -9,6 +9,7 @@
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
 
     <style>
         :root {
@@ -86,6 +87,20 @@
             display: inline-block; padding-bottom: 10px; position: relative; left: 50%; transform: translateX(-50%);
         }
 
+        /* --- HIGHLIGHTS --- */
+        .highlights-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 25px; }
+        .highlight-card { 
+            background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 10px; 
+            overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.5); transition: transform 0.3s ease, border-color 0.3s ease;
+            position: relative;
+        }
+        .highlight-card:hover { transform: translateY(-5px); border-color: var(--accent-gold); }
+        .highlight-video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; background: #000; }
+        .highlight-video-container iframe, .highlight-video-container video { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .highlight-info { padding: 15px; }
+        .highlight-title { font-family: var(--font-title); font-size: 1.3rem; color: var(--text-main); text-transform: uppercase; margin-bottom: 5px; }
+        .highlight-tag { display: inline-block; font-size: 0.75rem; background: rgba(212, 175, 55, 0.2); color: var(--accent-gold); border: 1px solid var(--accent-gold); padding: 2px 8px; border-radius: 10px; font-weight: bold; text-transform: uppercase; }
+
         /* --- EVENTS (CARTELERAS) --- */
         .events-grid { display: flex; flex-direction: column; gap: 40px; max-width: 1000px; margin: 0 auto; }
         .event-card { background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s; }
@@ -133,15 +148,43 @@
         .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         .fighter-card { 
             background: var(--bg-secondary); border-radius: 10px; overflow: hidden; cursor: pointer;
-            border: 1px solid var(--border-color); transition: transform 0.3s, box-shadow 0.3s; position: relative;
+            border: 1px solid var(--border-color); transition: all 0.3s ease; position: relative;
+            display: flex; flex-direction: column; justify-content: space-between;
         }
         .fighter-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(230,25,25,0.3); border-color: var(--accent-red); }
-        .fighter-img-container { height: 250px; background: #0a0a0a; overflow: hidden; display: flex; align-items: center; justify-content: center; border-bottom: 3px solid var(--accent-red); }
+        
+        /* ESTILO ARCO DORADO (CAMPEONES) */
+        .fighter-card.champion-card {
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
+        }
+        .fighter-card.champion-card:hover {
+            box-shadow: 0 0 30px rgba(212, 175, 55, 0.7);
+            border-color: #fff;
+        }
+        .fighter-card.champion-card .fighter-img-container {
+            border-bottom: 3px solid var(--accent-gold);
+        }
+
+        .fighter-img-container { height: 250px; background: #0a0a0a; overflow: hidden; display: flex; align-items: center; justify-content: center; border-bottom: 3px solid var(--accent-red); position: relative;}
         .fighter-img-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity 0.3s; }
         .fighter-card:hover .fighter-img-container img { opacity: 1; }
-        .fighter-info { padding: 15px; text-align: center; }
+        .fighter-info { padding: 15px; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
         .fighter-info-name { font-family: var(--font-title); font-size: 1.6rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
         .fighter-info-record { color: var(--accent-gold); font-weight: 900; font-size: 1.1rem; }
+
+        /* --- INSIGNIAS Y LOGROS (BADGES) --- */
+        .badges-container { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 10px; }
+        .badge {
+            font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 12px; display: inline-flex;
+            align-items: center; gap: 4px; letter-spacing: 0.5px;
+        }
+        .badge-gold { background: rgba(212, 175, 55, 0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+        .badge-red { background: rgba(230, 25, 25, 0.15); color: #ff4444; border: 1px solid #ff4444; }
+        .badge-blue { background: rgba(68, 136, 255, 0.15); color: #4488ff; border: 1px solid #4488ff; }
+        .badge-green { background: rgba(40, 167, 69, 0.15); color: #28a745; border: 1px solid #28a745; }
+        .badge-purple { background: rgba(153, 51, 204, 0.15); color: #c084fc; border: 1px solid #c084fc; }
 
         /* --- MODALS (POPUPS) --- */
         .modal-overlay { 
@@ -195,62 +238,30 @@
         input:focus, select:focus, textarea:focus { border-color: var(--accent-gold); }
         textarea { resize: vertical; min-height: 100px; }
 
-        /* ========================================================= */
-        /* --- MEJORAS ESPECÍFICAS PARA MÓVIL (MOBILE ENHANCEMENTS) --- */
-        /* ========================================================= */
+        /* --- MEJORAS ESPECÍFICAS PARA MÓVIL --- */
         @media (max-width: 768px) {
-            nav { 
-                padding: 10px 15px; 
-                flex-wrap: wrap; 
-                gap: 10px;
-                background: rgba(5, 5, 5, 0.98);
-            }
+            nav { padding: 10px 15px; flex-wrap: wrap; gap: 10px; background: rgba(5, 5, 5, 0.98); }
             .brand { font-size: 1.5rem; }
-            
-            /* Menú deslizable horizontal para accesibilidad rápida en táctil */
-            .nav-links { 
-                display: flex; 
-                width: 100%; 
-                order: 3; 
-                overflow-x: auto; 
-                padding: 6px 0 2px 0;
-                gap: 10px; 
-                white-space: nowrap;
-                -webkit-overflow-scrolling: touch;
-                scrollbar-width: none;
-            }
+            .nav-links { display: flex; width: 100%; order: 3; overflow-x: auto; padding: 6px 0 2px 0; gap: 10px; white-space: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
             .nav-links::-webkit-scrollbar { display: none; }
-            .nav-links a { 
-                font-size: 0.9rem; 
-                background: rgba(255, 255, 255, 0.05); 
-                padding: 6px 14px; 
-                border-radius: 20px; 
-                border: 1px solid rgba(255,255,255,0.1); 
-            }
+            .nav-links a { font-size: 0.9rem; background: rgba(255, 255, 255, 0.05); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); }
             .nav-links a:active { background: var(--accent-gold); color: #000; }
-
             .auth-panel { gap: 8px; flex-wrap: wrap; }
             .admin-controls { flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
             .btn { font-size: 0.85rem; padding: 6px 12px; border-radius: 6px; }
-
-            /* Hero y noticias responsivo */
             .hero-section { height: auto; min-height: 85vh; padding: 120px 10px 40px; }
             .news-container { width: 100%; height: 480px; border-radius: 8px; }
             .news-header { font-size: 1.2rem; padding: 10px; }
-
-            /* Secciones y Títulos */
             .section-container { padding: 45px 12px; }
             .section-title { font-size: 2.2rem; margin-bottom: 30px; }
-
-            /* Roster y Filtros */
             .search-bar { padding: 12px 18px; font-size: 1rem; }
             .roster-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
             .fighter-img-container { height: 180px; }
             .fighter-info { padding: 10px; }
             .fighter-info-name { font-size: 1.2rem; }
             .fighter-info-record { font-size: 0.95rem; }
-
-            /* Carteleras en Móvil */
+            .badge { font-size: 0.65rem; padding: 2px 6px; }
+            .highlights-grid { grid-template-columns: 1fr; }
             .event-card.featured { transform: none; }
             .event-card.featured .event-poster { height: 240px; }
             .event-card:not(.featured) .event-poster { height: 160px; }
@@ -260,42 +271,18 @@
             .fight-list { padding: 10px; gap: 10px; }
             .fight-row { padding: 10px; grid-template-columns: 1fr auto 1fr; gap: 5px; }
             .fighter-name-event { font-size: 1rem; }
-
-            /* Rankings en Móvil */
             .rankings-grid { grid-template-columns: 1fr; gap: 20px; }
-
-            /* Modal Estilo Bottom-Sheet para Móvil con cierre accesible */
             .modal-overlay { align-items: flex-end; }
-            .modal-content { 
-                width: 100%; 
-                max-height: 92vh; 
-                border-bottom-left-radius: 0; 
-                border-bottom-right-radius: 0; 
-                border-top-left-radius: 16px; 
-                border-top-right-radius: 16px; 
-                border-top: 3px solid var(--accent-gold);
-            }
-            .modal-close { 
-                top: 10px; right: 15px; 
-                background: rgba(0,0,0,0.7); 
-                width: 36px; height: 36px; 
-                border-radius: 50%; 
-                display: flex; align-items: center; justify-content: center; 
-                font-size: 1.5rem; border: 1px solid #444;
-            }
+            .modal-content { width: 100%; max-height: 92vh; border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-top-left-radius: 16px; border-top-right-radius: 16px; border-top: 3px solid var(--accent-gold); }
+            .modal-close { top: 10px; right: 15px; background: rgba(0,0,0,0.7); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border: 1px solid #444; }
             .profile-header { flex-direction: column; text-align: center; }
             .profile-img { width: 100%; height: 260px; }
             .profile-title-area { padding: 20px 15px; align-items: center; }
             .profile-name { font-size: 2.2rem; }
             .profile-body { padding: 15px; grid-template-columns: 1fr; gap: 20px; }
-            
             .admin-form-container { padding: 20px 15px; }
             .form-grid { grid-template-columns: 1fr; }
-
-            /* Feedback de pulsación táctil nativo */
-            .fighter-card:active, .ranking-item:active, .event-card:active {
-                transform: scale(0.98);
-            }
+            .fighter-card:active, .ranking-item:active, .event-card:active { transform: scale(0.98); }
         }
     </style>
 </head>
@@ -306,6 +293,7 @@
         <div class="brand">UTC <span>DB</span></div>
         <div class="nav-links">
             <a href="#inicio">Inicio</a>
+            <a href="#highlights">Highlights</a>
             <a href="#eventos">Eventos</a>
             <a href="#rankings">Rankings</a>
             <a href="#roster">Roster</a>
@@ -313,6 +301,7 @@
         <div class="auth-panel">
             <div id="adminControls" class="admin-controls">
                 <button class="btn btn-dark" onclick="openAdminModal('settings')">⚙️ Inicio</button>
+                <button class="btn btn-dark" onclick="openAdminModal('highlight')">🎬 +Clip</button>
                 <button class="btn btn-dark" onclick="openAdminModal('event')">+ Evento</button>
                 <button class="btn btn-dark" onclick="openAdminModal('rank')">👑 Ranks</button>
                 <button class="btn btn-dark" onclick="openAdminModal('fighter')">+ Peleador</button>
@@ -328,6 +317,12 @@
             <div class="news-header">ÚLTIMAS NOTICIAS UTC</div>
             <iframe id="newsIframe" class="news-iframe" src="" allowfullscreen></iframe>
         </div>
+    </div>
+
+    <!-- HIGHLIGHTS -->
+    <div id="highlights" class="section-container" style="background-color: #0a0a0a;">
+        <h2 class="section-title">Highlights</h2>
+        <div id="highlightsGrid" class="highlights-grid"></div>
     </div>
 
     <!-- EVENTOS -->
@@ -374,6 +369,30 @@
                     <div class="form-group full"><label>URL Imagen de Fondo (Inicio)</label><input type="text" id="setHeroImg" placeholder="Link de una imagen..."></div>
                     <div class="form-group full"><label>Link Google Docs (Noticias)</label><input type="text" id="setDocLink" placeholder="Link del Google Docs..."></div>
                     <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Configuración</button>
+                </form>
+
+                <!-- Formulario: Registrar Highlight -->
+                <form id="formHighlight" style="display: none;" onsubmit="saveHighlight(event)">
+                    <div class="form-grid">
+                        <div class="form-group full">
+                            <label>Título del Highlight</label>
+                            <input type="text" id="hl_title" required placeholder="Ej: KO Brutal de Juan Perez">
+                        </div>
+                        <div class="form-group full">
+                            <label>Opción A: Subir Video Directo desde el Dispositivo</label>
+                            <input type="file" id="hl_file" accept="video/*">
+                        </div>
+                        <div class="form-group full">
+                            <label>Opción B: URL del Video (YouTube Link o Embed)</label>
+                            <input type="text" id="hl_url" placeholder="https://www.youtube.com/watch?v=...">
+                        </div>
+                        <div class="form-group full">
+                            <label>Etiqueta / Categoria</label>
+                            <input type="text" id="hl_tag" placeholder="Ej: KO del año, Sumisión, UTC 1">
+                        </div>
+                    </div>
+                    <div id="hl_progress" style="color: var(--accent-gold); font-weight: bold; margin-top: 10px; text-align: center;"></div>
+                    <button type="submit" id="hl_btn" class="btn btn-red" style="width: 100%; margin-top: 15px;">Publicar Highlight</button>
                 </form>
 
                 <!-- Formulario: Registrar/Editar Peleador -->
@@ -503,15 +522,18 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const storage = firebase.storage();
 
-        let isAdmin = false; let fighters = []; let events = []; let settings = { heroImg: '', docLink: '' }; let tempFights = [];
+        let isAdmin = false; let fighters = []; let events = []; let highlights = []; let settings = { heroImg: '', docLink: '' }; let tempFights = [];
 
         db.ref('ufc_data/settings').on('value', snap => { if(snap.val()) settings = snap.val(); applySettings(); });
         db.ref('ufc_data/fighters').on('value', snap => { fighters = snap.val() ? Object.values(snap.val()) : []; renderRoster(); renderRankings(); });
         db.ref('ufc_data/events').on('value', snap => { events = snap.val() ? Object.values(snap.val()) : []; renderEvents(); });
+        db.ref('ufc_data/highlights').on('value', snap => { highlights = snap.val() ? Object.values(snap.val()) : []; renderHighlights(); });
 
         function syncFighters() { db.ref('ufc_data/fighters').set(fighters); }
         function syncEvents() { db.ref('ufc_data/events').set(events); }
+        function syncHighlights() { db.ref('ufc_data/highlights').set(highlights); }
         function syncSettings() { db.ref('ufc_data/settings').set(settings); }
 
         function toggleAuth() {
@@ -520,12 +542,12 @@
                 if (psw === "UFCUTU_2MH") { 
                     isAdmin = true; document.getElementById('adminControls').style.display = 'flex';
                     document.getElementById('authBtn').innerText = 'Salir Admin'; document.getElementById('authBtn').classList.replace('btn-gold', 'btn-red');
-                    renderRoster(); renderEvents();
+                    renderRoster(); renderEvents(); renderHighlights();
                 } else if (psw !== null) { alert("Incorrecto."); }
             } else {
                 isAdmin = false; document.getElementById('adminControls').style.display = 'none';
                 document.getElementById('authBtn').innerText = 'Ser Admin'; document.getElementById('authBtn').classList.replace('btn-red', 'btn-gold');
-                renderRoster(); renderEvents();
+                renderRoster(); renderEvents(); renderHighlights();
             }
         }
 
@@ -538,14 +560,189 @@
 
         function closeModal(e, modalId) { if(e.target.id === modalId) document.getElementById(modalId).classList.remove('active'); }
 
+        /* --- GENERADOR DE EMBEDS Y MANEJO DE HIGHLIGHTS --- */
+        function isVideoFile(url) {
+            if (!url) return false;
+            return url.includes('firebasestorage.googleapis.com') || 
+                   url.startsWith('data:video/') || 
+                   /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
+        }
+
+        function formatEmbedUrl(url) {
+            if(!url) return '';
+            if (url.includes('youtube.com/watch?v=')) {
+                let id = url.split('v=')[1].split('&')[0];
+                return `https://www.youtube.com/embed/${id}`;
+            } else if (url.includes('youtu.be/')) {
+                let id = url.split('youtu.be/')[1].split('?')[0];
+                return `https://www.youtube.com/embed/${id}`;
+            }
+            return url;
+        }
+
+        async function saveHighlight(e) {
+            e.preventDefault();
+            let title = document.getElementById('hl_title').value;
+            let tag = document.getElementById('hl_tag').value || 'DESTACADO';
+            let fileInput = document.getElementById('hl_file');
+            let urlInput = document.getElementById('hl_url').value;
+            let progressDiv = document.getElementById('hl_progress');
+            let btn = document.getElementById('hl_btn');
+
+            let videoUrl = '';
+
+            if (fileInput.files.length > 0) {
+                let file = fileInput.files[0];
+                btn.disabled = true;
+                progressDiv.innerText = 'Subiendo video... 0%';
+
+                try {
+                    let storageRef = storage.ref('highlights/' + Date.now() + '_' + file.name);
+                    let uploadTask = storageRef.put(file);
+
+                    videoUrl = await new Promise((resolve, reject) => {
+                        uploadTask.on('state_changed', 
+                            (snapshot) => {
+                                let pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                                progressDiv.innerText = `Subiendo video... ${pct}%`;
+                            }, 
+                            (error) => reject(error), 
+                            async () => {
+                                let downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+                                resolve(downloadURL);
+                            }
+                        );
+                    });
+                } catch (error) {
+                    console.error("Error al subir a Firebase Storage:", error);
+                    if (file.size < 12 * 1024 * 1024) { // Fallback local para videos de menos de 12MB
+                        progressDiv.innerText = 'Procesando archivo localmente...';
+                        videoUrl = await new Promise((resolve) => {
+                            let reader = new FileReader();
+                            reader.onload = (ev) => resolve(ev.target.result);
+                            reader.readAsDataURL(file);
+                        });
+                    } else {
+                        alert("Error al subir video: " + error.message);
+                        btn.disabled = false;
+                        progressDiv.innerText = '';
+                        return;
+                    }
+                }
+            } else if (urlInput.trim() !== '') {
+                videoUrl = formatEmbedUrl(urlInput);
+            } else {
+                alert("Por favor selecciona un archivo de video o ingresa un enlace.");
+                return;
+            }
+
+            let newHl = {
+                id: Date.now(),
+                title: title,
+                url: videoUrl,
+                tag: tag
+            };
+
+            highlights.unshift(newHl);
+            syncHighlights();
+
+            btn.disabled = false;
+            progressDiv.innerText = '';
+            document.getElementById('hl_file').value = '';
+            document.getElementById('hl_url').value = '';
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        function deleteHighlight(id) {
+            if(confirm("¿Eliminar este highlight?")) {
+                highlights = highlights.filter(h => h.id !== id);
+                syncHighlights();
+            }
+        }
+
+        function renderHighlights() {
+            let container = document.getElementById('highlightsGrid');
+            container.innerHTML = '';
+            if(highlights.length === 0) {
+                container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888;">No hay highlights disponibles actualmente.</div>';
+                return;
+            }
+            highlights.forEach(hl => {
+                let adminBtn = isAdmin ? `<button class="btn btn-red" style="position: absolute; top: 10px; right: 10px; z-index: 10; padding: 4px 8px; font-size: 0.8rem;" onclick="deleteHighlight(${hl.id})">🗑️</button>` : '';
+                
+                let playerHTML = isVideoFile(hl.url)
+                    ? `<video src="${hl.url}" controls style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"></video>`
+                    : `<iframe src="${hl.url}" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+
+                container.innerHTML += `
+                    <div class="highlight-card">
+                        ${adminBtn}
+                        <div class="highlight-video-container">
+                            ${playerHTML}
+                        </div>
+                        <div class="highlight-info">
+                            <div class="highlight-title">${hl.title}</div>
+                            <span class="highlight-tag">${hl.tag}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        /* --- INSIGNIAS Y LOGROS --- */
+        function getFighterBadges(f) {
+            let badges = [];
+            let [w, l, d] = (f.record || '0-0-0').split('-').map(n => parseInt(n) || 0);
+
+            let isChamp = false;
+            if (f.rankings) {
+                for (let cat in f.rankings) {
+                    if (f.rankings[cat] === 'C') { isChamp = true; break; }
+                }
+            }
+            if (isChamp) {
+                badges.push({ text: '👑 CAMPEÓN', type: 'badge-gold' });
+            } else if (f.rankings && Object.keys(f.rankings).some(cat => f.rankings[cat] !== 'UNRANKED')) {
+                badges.push({ text: '📊 RANKED TOP', type: 'badge-blue' });
+            }
+
+            if (l === 0 && w > 0) {
+                badges.push({ text: '🛡️ INVICTO', type: 'badge-green' });
+            }
+
+            if (w >= 5) {
+                badges.push({ text: '🔥 VETERANO', type: 'badge-purple' });
+            }
+
+            let ko = parseInt(f.ko) || 0;
+            let sub = parseInt(f.sub) || 0;
+            let dec = parseInt(f.dec) || 0;
+
+            if (ko >= 3 || (w > 0 && (ko / w) >= 0.5 && ko >= 2)) {
+                badges.push({ text: '💥 KO ARTIST', type: 'badge-red' });
+            }
+            if (sub >= 3 || (w > 0 && (sub / w) >= 0.5 && sub >= 2)) {
+                badges.push({ text: '🥋 SUB MASTER', type: 'badge-blue' });
+            }
+            if (dec >= 3 || (w > 0 && (dec / w) >= 0.5 && dec >= 2)) {
+                badges.push({ text: '⏱️ TÁCTICO', type: 'badge-gold' });
+            }
+
+            return badges;
+        }
+
         function openAdminModal(type) {
             if(!isAdmin) return;
             document.getElementById('adminModal').classList.add('active');
-            ['formSettings', 'formFighter', 'formRank', 'formEvent'].forEach(id => document.getElementById(id).style.display = 'none');
+            ['formSettings', 'formHighlight', 'formFighter', 'formRank', 'formEvent'].forEach(id => document.getElementById(id).style.display = 'none');
             
             if(type === 'settings') {
                 document.getElementById('adminModalTitle').innerText = 'Configuración Inicio'; document.getElementById('formSettings').style.display = 'block';
                 document.getElementById('setHeroImg').value = settings.heroImg || ''; document.getElementById('setDocLink').value = settings.docLink || '';
+            } else if(type === 'highlight') {
+                document.getElementById('adminModalTitle').innerText = 'Añadir Highlight'; document.getElementById('formHighlight').style.display = 'block';
+                document.getElementById('formHighlight').reset();
+                document.getElementById('hl_progress').innerText = '';
             } else if(type === 'fighter') {
                 document.getElementById('adminModalTitle').innerText = 'Registrar Peleador'; document.getElementById('formFighter').style.display = 'block';
                 document.getElementById('formFighter').reset(); document.getElementById('f_id').value = '';
@@ -627,14 +824,26 @@
                         <button class="btn btn-gold" style="padding:4px 8px; font-size:0.8rem;" onclick="event.stopPropagation(); editFighter(${f.id})">✏️</button>
                         <button class="btn btn-red" style="padding:4px 8px; font-size:0.8rem;" onclick="event.stopPropagation(); deleteFighter(${f.id})">🗑️</button>
                     </div>` : '';
+                
+                let isChamp = f.rankings && Object.values(f.rankings).some(r => r === 'C');
+                let champClass = isChamp ? 'champion-card' : '';
+
+                let badges = getFighterBadges(f);
+                let badgesHTML = badges.length ? `<div class="badges-container">${badges.map(b => `<span class="badge ${b.type}">${b.text}</span>`).join('')}</div>` : '';
+
                 grid.innerHTML += `
-                    <div class="fighter-card" onclick="openFighterProfile(${f.id})">
+                    <div class="fighter-card ${champClass}" onclick="openFighterProfile(${f.id})">
                         ${adminBtns}
-                        <div class="fighter-img-container"><img src="${f.imageUrl || 'https://via.placeholder.com/400x500/111/444?text=UTC'}" alt="${f.name}"></div>
+                        <div class="fighter-img-container">
+                            <img src="${f.imageUrl || 'https://via.placeholder.com/400x500/111/444?text=UTC'}" alt="${f.name}">
+                        </div>
                         <div class="fighter-info">
-                            <div class="fighter-info-name">${f.name}</div>
-                            <div class="fighter-info-record">${f.record || '0-0-0'}</div>
-                            <div style="font-size:0.8rem; color:#888; margin-top:5px;">${f.nationality || 'URU'}</div>
+                            <div>
+                                <div class="fighter-info-name">${f.name}</div>
+                                <div class="fighter-info-record">${f.record || '0-0-0'}</div>
+                                <div style="font-size:0.8rem; color:#888; margin-top:2px;">${f.nationality || 'URU'}</div>
+                            </div>
+                            ${badgesHTML}
                         </div>
                     </div>`;
             });
@@ -643,7 +852,6 @@
         function openFighterProfile(id) {
             let f = fighters.find(x => x.id === id); if(!f) return;
             
-            // Historial desde los eventos
             let historyHTML = '';
             events.forEach(ev => {
                 ev.fights.forEach(fight => {
@@ -661,14 +869,12 @@
             });
             if(!historyHTML) historyHTML = '<div style="color:#888; font-size:0.9rem;">Sin historial registrado.</div>';
 
-            // Generar Galería
             let galleryHTML = '';
             if(f.gallery) {
                 let images = f.gallery.split(',').map(url => url.trim()).filter(url => url !== '');
                 images.forEach(imgUrl => { galleryHTML += `<img src="${imgUrl}" class="gallery-img" onclick="window.open('${imgUrl}', '_blank')">`; });
             }
 
-            // CÁLCULO DE ESTADÍSTICAS DE GOLPEO Y MÉTODOS DE VICTORIA
             let headVal = parseInt(f.head) || 0;
             let bodyVal = parseInt(f.body) || 0;
             let legsVal = parseInt(f.legs) || 0;
@@ -696,13 +902,17 @@
                 mostWinMethod = `${methods.join(' / ')} (${maxWins})`;
             }
 
+            let badges = getFighterBadges(f);
+            let badgesHTML = badges.length ? `<div class="badges-container" style="justify-content: flex-start; margin-top: 10px;">${badges.map(b => `<span class="badge ${b.type}">${b.text}</span>`).join('')}</div>` : '';
+
             document.getElementById('profileContent').innerHTML = `
                 <div class="profile-header">
                     <img src="${f.imageUrl || 'https://via.placeholder.com/400x500/111/444?text=FOTO'}" class="profile-img">
                     <div class="profile-title-area">
                         <div class="profile-name">${f.name}</div>
                         <div class="profile-record">REC: ${f.record || '0-0-0'}</div>
-                        <div style="color: #888; margin-top:5px; font-weight:bold;">${f.nationality || ''}</div>
+                        <div style="color: #888; margin-top:2px; font-weight:bold;">${f.nationality || ''}</div>
+                        ${badgesHTML}
                     </div>
                 </div>
                 <div class="profile-body">
@@ -722,12 +932,10 @@
                         <div class="fight-history-list">${historyHTML}</div>
                     </div>
 
-                    <!-- ESTADÍSTICAS -->
                     <div style="grid-column: 1 / -1;">
                         <div class="profile-section-title">Estadísticas de Golpeo y Métodos de Victoria</div>
                         <div class="stat-grid" style="grid-template-columns: 1fr; gap: 20px;">
                             
-                            <!-- BARRAS DE ZONA DE GOLPEO -->
                             <div style="background: #0a0a0a; padding: 15px; border-radius: 6px; border: 1px solid #222;">
                                 <div style="font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 10px;">
                                     🎯 Zonas de Golpeo (¿Dónde golpea más?: <span style="color:#fff">${mostTargetedZone}</span>)
@@ -758,7 +966,6 @@
                                 </div>
                             </div>
 
-                            <!-- DESGLOSE DE VICTORIAS -->
                             <div style="background: #0a0a0a; padding: 15px; border-radius: 6px; border: 1px solid #222; display:flex; flex-direction:column; justify-content:center;">
                                 <div>
                                     <div style="font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 10px;">
@@ -923,7 +1130,6 @@
             let sortedEvents = [...events].reverse();
             sortedEvents.forEach((ev, index) => {
                 let isFeatured = index === 0;
-                
                 let posterHTML = ev.imageUrl ? `<img src="${ev.imageUrl}" class="event-poster">` : '';
 
                 let fightsHTML = ev.fights.map(f => {
