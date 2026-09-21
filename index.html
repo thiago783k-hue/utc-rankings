@@ -34,47 +34,6 @@
 
         /* --- NAVBAR --- */
         nav {
-            position: fixed; top: 0; width: 100%; background: rgba(5, 5, 5, 0.95Para solucionar esto y mantener la estructura ordenada, restauré la sección de **Noticias** con un rediseño que encaja perfectamente con el nuevo estilo oscuro y dorado. Esta sección se ubicará justo debajo de la pelea **Estelar**, tendrá su propio enlace en la barra de navegación, y un botón dedicado en el panel de Admin para que puedas crear o borrar noticias dinámicamente.
-
-Copia y reemplaza tu archivo `index.html` completo con esta versión final:
-
-```html
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UTC DATABASE - Oficial</title>
-    
-    <link href="[https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@400;700;900&display=swap](https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@400;700;900&display=swap)" rel="stylesheet">
-    
-    <script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js)"></script>
-    <script src="[https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js](https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js)"></script>
-
-    <style>
-        :root {
-            --bg-color: #050505;
-            --bg-secondary: #111111;
-            --card-bg: #1a1a1a;
-            --accent-red: #e61919;
-            --accent-red-hover: #b31212;
-            --accent-gold: #d4af37;
-            --text-main: #ffffff;
-            --text-muted: #8a8a8a;
-            --border-color: #333333;
-            --font-title: 'Oswald', sans-serif;
-            --font-body: 'Roboto', sans-serif;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        
-        body { 
-            background-color: var(--bg-color); color: var(--text-main); 
-            font-family: var(--font-body); overflow-x: hidden; scroll-behavior: smooth;
-        }
-
-        /* --- NAVBAR --- */
-        nav {
             position: fixed; top: 0; width: 100%; background: rgba(5, 5, 5, 0.95);
             backdrop-filter: blur(10px); z-index: 1000; border-bottom: 2px solid var(--accent-red);
             display: flex; justify-content: space-between; align-items: center; padding: 15px 30px;
@@ -87,7 +46,7 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         .nav-links a:hover { color: var(--accent-gold); }
 
         .auth-panel { display: flex; align-items: center; gap: 15px; }
-        .admin-controls { display: none; gap: 10px; flex-wrap: wrap; justify-content: flex-end;}
+        .admin-controls { display: none; gap: 10px; }
         .btn { 
             font-family: var(--font-title); font-size: 1rem; text-transform: uppercase; 
             padding: 8px 16px; border: none; cursor: pointer; border-radius: 4px; font-weight: 600; transition: all 0.3s;
@@ -99,29 +58,24 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         .btn-dark { background: #222; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
         .btn-dark:hover { background: var(--accent-gold); color: #000; }
 
-        /* --- ESTELAR / HERO SECTION --- */
+        /* --- HERO & NEWS SECTION --- */
         .hero-section {
-            position: relative; width: 100%; height: 100vh; min-height: 600px;
+            position: relative; width: 100%; height: 90vh; min-height: 600px;
             background-size: cover; background-position: center;
-            display: flex; align-items: center; justify-content: center; text-align: center;
+            display: flex; align-items: center; justify-content: center; padding-top: 60px;
         }
         .hero-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, rgba(5,5,5,1) 100%);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(5,5,5,1) 100%);
         }
-        .estelar-content {
-            position: relative; z-index: 10; padding: 0 20px;
+        .news-container {
+            position: relative; z-index: 10; width: 90%; max-width: 800px; height: 70%;
+            background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; overflow: hidden;
         }
-        .evento-titulo { font-family: var(--font-title); font-size: 2.5rem; color: var(--accent-gold); text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
-        .peleadores-main { font-family: var(--font-title); font-size: 4.5rem; font-weight: 900; color: #fff; text-transform: uppercase; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 5px 20px rgba(0,0,0,0.9); }
-        .evento-subtitulo { font-family: var(--font-title); font-size: 1.8rem; font-style: italic; color: #ccc; margin-bottom: 40px; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-        .btn-scroll { 
-            font-family: var(--font-title); font-size: 1.2rem; text-transform: uppercase; 
-            padding: 15px 35px; background: var(--accent-red); color: white; border: none; 
-            border-radius: 50px; cursor: pointer; font-weight: 700; transition: all 0.3s;
-            box-shadow: 0 10px 20px rgba(230,25,25,0.4);
-        }
-        .btn-scroll:hover { background: var(--accent-red-hover); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(230,25,25,0.6); }
+        .news-header { background: rgba(0,0,0,0.8); padding: 15px; text-align: center; font-family: var(--font-title); font-size: 1.5rem; color: var(--accent-gold); border-bottom: 1px solid var(--accent-red); }
+        .news-iframe { flex-grow: 1; width: 100%; border: none; background: #fff; }
 
         /* --- SECTION LAYOUT --- */
         .section-container { max-width: 1400px; margin: 0 auto; padding: 80px 20px; }
@@ -131,24 +85,20 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             display: inline-block; padding-bottom: 10px; position: relative; left: 50%; transform: translateX(-50%);
         }
 
-        /* --- NOTICIAS --- */
-        .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
-        .news-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; position: relative; transition: transform 0.3s; }
-        .news-card:hover { transform: translateY(-5px); border-color: var(--accent-gold); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        .news-img { width: 100%; height: 200px; object-fit: cover; border-bottom: 2px solid var(--accent-red); }
-        .news-content { padding: 20px; }
-        .news-date { color: var(--accent-gold); font-size: 0.85rem; font-weight: bold; margin-bottom: 8px; display: block; text-transform: uppercase; }
-        .news-title { font-family: var(--font-title); font-size: 1.6rem; text-transform: uppercase; margin-bottom: 10px; line-height: 1.2; color: #fff; }
-        .news-body { color: #ccc; font-size: 0.95rem; line-height: 1.6; white-space: pre-wrap; }
-        .news-admin-bar { position: absolute; top: 10px; right: 10px; z-index: 10; display: flex; gap: 5px; }
-
         /* --- EVENTS (CARTELERAS) --- */
         .events-grid { display: flex; flex-direction: column; gap: 40px; max-width: 1000px; margin: 0 auto; }
         .event-card { background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s; }
-        .event-card.featured { border: 2px solid var(--accent-gold); box-shadow: 0 15px 50px rgba(212, 175, 55, 0.15); transform: scale(1.02); }
+        
+        /* Estilo especial para la última cartelera (Destacada) */
+        .event-card.featured { 
+            border: 2px solid var(--accent-gold); 
+            box-shadow: 0 15px 50px rgba(212, 175, 55, 0.15); 
+            transform: scale(1.02);
+        }
         .event-poster { width: 100%; display: block; object-fit: cover; border-bottom: 3px solid var(--accent-red); }
         .event-card.featured .event-poster { height: 500px; }
         .event-card:not(.featured) .event-poster { height: 250px; opacity: 0.8; }
+
         .event-header { background: linear-gradient(90deg, #1a0000 0%, #000000 100%); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
         .event-name { font-family: var(--font-title); font-size: 2.2rem; font-weight: 700; color: #fff; text-transform: uppercase; line-height: 1.1; }
         .event-card:not(.featured) .event-name { font-size: 1.5rem; }
@@ -180,15 +130,17 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         .search-bar:focus { box-shadow: 0 0 15px rgba(212,175,55,0.3); }
 
         .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
-        .fighter-card { background: var(--bg-secondary); border-radius: 10px; overflow: hidden; cursor: pointer; border: 1px solid var(--border-color); transition: transform 0.3s, box-shadow 0.3s; position: relative; }
+        .fighter-card { 
+            background: var(--bg-secondary); border-radius: 10px; overflow: hidden; cursor: pointer;
+            border: 1px solid var(--border-color); transition: transform 0.3s, box-shadow 0.3s; position: relative;
+        }
         .fighter-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(230,25,25,0.3); border-color: var(--accent-red); }
         .fighter-img-container { height: 250px; background: #0a0a0a; overflow: hidden; display: flex; align-items: center; justify-content: center; border-bottom: 3px solid var(--accent-red); }
         .fighter-img-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity 0.3s; }
         .fighter-card:hover .fighter-img-container img { opacity: 1; }
         .fighter-info { padding: 15px; text-align: center; }
         .fighter-info-name { font-family: var(--font-title); font-size: 1.6rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
-        .fighter-info-record { color: var(--accent-gold); font-weight: 900; font-size: 1.1rem; margin-bottom: 5px; }
-        .icono-bandera { font-size: 1.2rem; margin-left: 5px; }
+        .fighter-info-record { color: var(--accent-gold); font-weight: 900; font-size: 1.1rem; }
 
         /* --- MODALS (POPUPS) --- */
         .modal-overlay { 
@@ -223,6 +175,7 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         .history-item { background: #111; padding: 10px; border-left: 4px solid #333; border-radius: 4px; font-size: 0.9rem; }
         .history-item.win { border-left-color: #28a745; }
         .history-item.loss { border-left-color: var(--accent-red); }
+
         .profile-bio { grid-column: 1 / -1; color: #ccc; line-height: 1.6; font-size: 1.05rem; white-space: pre-wrap; background: #0a0a0a; padding: 20px; border-radius: 8px; border: 1px solid #222; }
         
         .gallery-container { grid-column: 1 / -1; display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px; }
@@ -248,7 +201,6 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             .form-grid { grid-template-columns: 1fr; }
             .nav-links { display: none; }
             .event-card.featured .event-poster { height: 300px; }
-            .peleadores-main { font-size: 3rem; }
         }
     </style>
 </head>
@@ -258,8 +210,7 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
     <nav>
         <div class="brand">UTC <span>DB</span></div>
         <div class="nav-links">
-            <a href="#inicio">Estelar</a>
-            <a href="#noticias">Noticias</a>
+            <a href="#inicio">Inicio</a>
             <a href="#eventos">Eventos</a>
             <a href="#rankings">Rankings</a>
             <a href="#roster">Roster</a>
@@ -267,7 +218,6 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         <div class="auth-panel">
             <div id="adminControls" class="admin-controls">
                 <button class="btn btn-dark" onclick="openAdminModal('settings')">⚙️ Inicio</button>
-                <button class="btn btn-dark" onclick="openAdminModal('news')">📰 Noticia</button>
                 <button class="btn btn-dark" onclick="openAdminModal('event')">+ Evento</button>
                 <button class="btn btn-dark" onclick="openAdminModal('rank')">👑 Ranks</button>
                 <button class="btn btn-dark" onclick="openAdminModal('fighter')">+ Peleador</button>
@@ -276,22 +226,12 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         </div>
     </nav>
 
-    <!-- ESTELAR (HERO SECTION) -->
-    <div id="inicio" class="hero-section" style="background-image: url('[https://images.unsplash.com/photo-1544365558-35aa4afcf11f?q=80&w=2036&auto=format&fit=crop](https://images.unsplash.com/photo-1544365558-35aa4afcf11f?q=80&w=2036&auto=format&fit=crop)');">
+    <!-- HERO & NEWS -->
+    <div id="inicio" class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1544365558-35aa4afcf11f?q=80&w=2036&auto=format&fit=crop');">
         <div class="hero-overlay"></div>
-        <div class="estelar-content">
-            <h3 id="displayHeroTitle" class="evento-titulo">UTC 4</h3>
-            <h1 id="displayHeroMain" class="peleadores-main">THIAGO Monzón VS Joaquin DLS</h1>
-            <p id="displayHeroSub" class="evento-subtitulo">Choque de campeones</p>
-            <button class="btn-scroll" onclick="document.getElementById('noticias').scrollIntoView({ behavior: 'smooth' })">Mira la cartelera completa</button>
-        </div>
-    </div>
-
-    <!-- NOTICIAS -->
-    <div id="noticias" class="section-container" style="background-color: var(--bg-secondary); border-top: 2px solid var(--accent-red); border-bottom: 2px solid var(--accent-red);">
-        <h2 class="section-title">Últimas Noticias</h2>
-        <div id="newsGrid" class="news-grid">
-            <!-- Las noticias se cargarán aquí -->
+        <div class="news-container">
+            <div class="news-header">ÚLTIMAS NOTICIAS UTC</div>
+            <iframe id="newsIframe" class="news-iframe" src="" allowfullscreen></iframe>
         </div>
     </div>
 
@@ -334,26 +274,11 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             <div class="admin-form-container">
                 <h2 id="adminModalTitle" style="color: var(--accent-gold); margin-bottom: 20px; font-family: var(--font-title); text-transform: uppercase;">Admin</h2>
                 
-                <!-- Formulario: Configurar Inicio Estelar -->
+                <!-- Formulario: Configurar Inicio -->
                 <form id="formSettings" style="display: none;" onsubmit="saveSettings(event)">
-                    <div class="form-group full"><label>URL Imagen de Fondo (Estelar)</label><input type="text" id="setHeroImg" placeholder="Link de una imagen..."></div>
-                    <div class="form-group"><label>Título Evento (Ej: UTC 4)</label><input type="text" id="setHeroTitle"></div>
-                    <div class="form-group full"><label>Peleadores (Ej: THIAGO Monzón VS Joaquin DLS)</label><input type="text" id="setHeroMain"></div>
-                    <div class="form-group full"><label>Subtítulo (Ej: Choque de campeones)</label><input type="text" id="setHeroSub"></div>
-                    <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Inicio</button>
-                </form>
-
-                <!-- Formulario: Crear/Editar Noticia -->
-                <form id="formNews" style="display: none;" onsubmit="saveNews(event)">
-                    <input type="hidden" id="n_id">
-                    <div class="form-group full"><label>URL Imagen de la Noticia</label><input type="text" id="n_img" placeholder="Link de imagen..." required></div>
-                    <div class="form-group full"><label>Título de la Noticia</label><input type="text" id="n_title" required></div>
-                    <div class="form-group full"><label>Fecha</label><input type="text" id="n_date" placeholder="Ej: 21 de Septiembre, 2026" required></div>
-                    <div class="form-group full">
-                        <label>Contenido</label>
-                        <textarea id="n_body" placeholder="Desarrollo de la noticia..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Publicar Noticia</button>
+                    <div class="form-group full"><label>URL Imagen de Fondo (Inicio)</label><input type="text" id="setHeroImg" placeholder="Link de una imagen..."></div>
+                    <div class="form-group full"><label>Link Google Docs (Noticias)</label><input type="text" id="setDocLink" placeholder="Link del Google Docs..."></div>
+                    <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Configuración</button>
                 </form>
 
                 <!-- Formulario: Registrar/Editar Peleador -->
@@ -365,22 +290,23 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
                             <small style="color:#888;">El récord exacto. Se actualizará solo al publicar eventos nuevos.</small>
                         </div>
                         <div class="form-group full"><label>URL Foto de Perfil</label><input type="text" id="f_img" placeholder="Link de imagen principal"></div>
-                        <div class="form-group"><label>Nacionalidad (Siglas Ej: URU)</label><input type="text" id="f_nation"></div>
-                        <div class="form-group"><label>Bandera (Emoji Ej: 🇦🇬 o 🇺🇾)</label><input type="text" id="f_flag"></div>
                         <div class="form-group"><label>Edad</label><input type="text" id="f_age"></div>
                         <div class="form-group"><label>Altura</label><input type="text" id="f_height"></div>
                         <div class="form-group"><label>Peso</label><input type="text" id="f_weight"></div>
                         <div class="form-group"><label>Alcance</label><input type="text" id="f_reach"></div>
                         <div class="form-group"><label>Guardia</label><input type="text" id="f_stance"></div>
+                        <div class="form-group"><label>Nacionalidad</label><input type="text" id="f_nation"></div>
                         <div class="form-group full"><label>Estilo / Armas</label><input type="text" id="f_style"></div>
                         
+                        <!-- NUEVOS CAMPOS: Bio y Galeria -->
                         <div class="form-group full">
                             <label>Biografía / Hazañas</label>
                             <textarea id="f_bio" placeholder="Escribe aquí los logros, historia y hazañas del peleador..."></textarea>
                         </div>
                         <div class="form-group full">
                             <label>Galería Adicional (Imágenes separadas por coma)</label>
-                            <input type="text" id="f_gallery" placeholder="Link1.jpg, Link2.jpg">
+                            <input type="text" id="f_gallery" placeholder="Link1.jpg, Link2.jpg, Link3.png">
+                            <small style="color:#888;">Pega los links de las imágenes separados por una coma (,)</small>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Peleador</button>
@@ -459,7 +385,7 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         const firebaseConfig = {
             apiKey: "AIzaSyC4ot99oNRT6b86v2tnnewkr-XNe5rz6uA",
             authDomain: "ufc-rankings.firebaseapp.com",
-            databaseURL: "[https://ufc-rankings-default-rtdb.firebaseio.com](https://ufc-rankings-default-rtdb.firebaseio.com)",
+            databaseURL: "https://ufc-rankings-default-rtdb.firebaseio.com",
             projectId: "ufc-rankings",
             storageBucket: "ufc-rankings.firebasestorage.app",
             messagingSenderId: "280619573072",
@@ -469,16 +395,14 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let isAdmin = false; let fighters = []; let events = []; let newsList = []; let settings = { heroImg: '', heroTitle: 'UTC', heroMain: 'PELEA ESTELAR', heroSub: 'Pronto...' }; let tempFights = [];
+        let isAdmin = false; let fighters = []; let events = []; let settings = { heroImg: '', docLink: '' }; let tempFights = [];
 
         db.ref('ufc_data/settings').on('value', snap => { if(snap.val()) settings = snap.val(); applySettings(); });
         db.ref('ufc_data/fighters').on('value', snap => { fighters = snap.val() ? Object.values(snap.val()) : []; renderRoster(); renderRankings(); });
         db.ref('ufc_data/events').on('value', snap => { events = snap.val() ? Object.values(snap.val()) : []; renderEvents(); });
-        db.ref('ufc_data/news').on('value', snap => { newsList = snap.val() ? Object.values(snap.val()) : []; renderNews(); });
 
         function syncFighters() { db.ref('ufc_data/fighters').set(fighters); }
         function syncEvents() { db.ref('ufc_data/events').set(events); }
-        function syncNews() { db.ref('ufc_data/news').set(newsList); }
         function syncSettings() { db.ref('ufc_data/settings').set(settings); }
 
         function toggleAuth() {
@@ -487,20 +411,20 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
                 if (psw === "UFCUTU_2MH") { 
                     isAdmin = true; document.getElementById('adminControls').style.display = 'flex';
                     document.getElementById('authBtn').innerText = 'Salir Admin'; document.getElementById('authBtn').classList.replace('btn-gold', 'btn-red');
-                    renderRoster(); renderEvents(); renderNews();
+                    renderRoster(); renderEvents();
                 } else if (psw !== null) { alert("Incorrecto."); }
             } else {
                 isAdmin = false; document.getElementById('adminControls').style.display = 'none';
                 document.getElementById('authBtn').innerText = 'Ser Admin'; document.getElementById('authBtn').classList.replace('btn-red', 'btn-gold');
-                renderRoster(); renderEvents(); renderNews();
+                renderRoster(); renderEvents();
             }
         }
 
         function applySettings() {
             if(settings.heroImg) document.getElementById('inicio').style.backgroundImage = `url('${settings.heroImg}')`;
-            document.getElementById('displayHeroTitle').innerText = settings.heroTitle || 'UTC';
-            document.getElementById('displayHeroMain').innerText = settings.heroMain || 'PELEA ESTELAR';
-            document.getElementById('displayHeroSub').innerText = settings.heroSub || '';
+            let link = settings.docLink || '';
+            if(link.includes('docs.google.com') && !link.includes('/pub') && !link.includes('/preview')) link = link.replace(/\/edit.*$/, '/preview');
+            document.getElementById('newsIframe').src = link;
         }
 
         function closeModal(e, modalId) { if(e.target.id === modalId) document.getElementById(modalId).classList.remove('active'); }
@@ -508,17 +432,11 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         function openAdminModal(type) {
             if(!isAdmin) return;
             document.getElementById('adminModal').classList.add('active');
-            ['formSettings', 'formNews', 'formFighter', 'formRank', 'formEvent'].forEach(id => document.getElementById(id).style.display = 'none');
+            ['formSettings', 'formFighter', 'formRank', 'formEvent'].forEach(id => document.getElementById(id).style.display = 'none');
             
             if(type === 'settings') {
-                document.getElementById('adminModalTitle').innerText = 'Configuración Inicio Estelar'; document.getElementById('formSettings').style.display = 'block';
-                document.getElementById('setHeroImg').value = settings.heroImg || ''; 
-                document.getElementById('setHeroTitle').value = settings.heroTitle || '';
-                document.getElementById('setHeroMain').value = settings.heroMain || '';
-                document.getElementById('setHeroSub').value = settings.heroSub || '';
-            } else if(type === 'news') {
-                document.getElementById('adminModalTitle').innerText = 'Crear Noticia'; document.getElementById('formNews').style.display = 'block';
-                document.getElementById('formNews').reset(); document.getElementById('n_id').value = '';
+                document.getElementById('adminModalTitle').innerText = 'Configuración Inicio'; document.getElementById('formSettings').style.display = 'block';
+                document.getElementById('setHeroImg').value = settings.heroImg || ''; document.getElementById('setDocLink').value = settings.docLink || '';
             } else if(type === 'fighter') {
                 document.getElementById('adminModalTitle').innerText = 'Registrar Peleador'; document.getElementById('formFighter').style.display = 'block';
                 document.getElementById('formFighter').reset(); document.getElementById('f_id').value = '';
@@ -537,63 +455,9 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             }
         }
 
-        // --- FUNCIONES DE NOTICIAS ---
-        function saveNews(e) {
-            e.preventDefault();
-            let idField = document.getElementById('n_id').value;
-            let newsData = {
-                id: idField ? parseInt(idField) : Date.now(),
-                img: document.getElementById('n_img').value,
-                title: document.getElementById('n_title').value,
-                date: document.getElementById('n_date').value,
-                body: document.getElementById('n_body').value
-            };
-            if (idField) newsList = newsList.map(n => n.id === newsData.id ? newsData : n);
-            else newsList.unshift(newsData); // Agrega al principio
-            syncNews(); document.getElementById('adminModal').classList.remove('active');
-        }
-
-        function editNews(id) {
-            let n = newsList.find(x => x.id === id); if(!n) return;
-            openAdminModal('news'); document.getElementById('adminModalTitle').innerText = 'Editar Noticia';
-            document.getElementById('n_id').value = n.id; document.getElementById('n_img').value = n.img;
-            document.getElementById('n_title').value = n.title; document.getElementById('n_date').value = n.date;
-            document.getElementById('n_body').value = n.body;
-        }
-
-        function deleteNews(id) { if(confirm("¿Borrar esta noticia?")) { newsList = newsList.filter(x => x.id !== id); syncNews(); } }
-
-        function renderNews() {
-            let grid = document.getElementById('newsGrid'); grid.innerHTML = '';
-            if (newsList.length === 0) { grid.innerHTML = '<p style="color:var(--text-muted); text-align:center; width:100%;">No hay noticias recientes.</p>'; return; }
-            
-            newsList.forEach(n => {
-                let adminBtns = isAdmin ? `
-                    <div class="news-admin-bar">
-                        <button class="btn btn-gold" style="padding:4px 8px; font-size:0.8rem;" onclick="editNews(${n.id})">✏️</button>
-                        <button class="btn btn-red" style="padding:4px 8px; font-size:0.8rem;" onclick="deleteNews(${n.id})">🗑️</button>
-                    </div>` : '';
-                    
-                grid.innerHTML += `
-                    <div class="news-card">
-                        ${adminBtns}
-                        <img src="${n.img}" class="news-img" alt="Noticia">
-                        <div class="news-content">
-                            <span class="news-date">${n.date}</span>
-                            <div class="news-title">${n.title}</div>
-                            <div class="news-body">${n.body}</div>
-                        </div>
-                    </div>`;
-            });
-        }
-
-        // --- RESTO DE FUNCIONES (INICIO, PELEADOR, EVENTOS, RANKINGS) ---
         function saveSettings(e) {
             e.preventDefault();
-            settings.heroImg = document.getElementById('setHeroImg').value; 
-            settings.heroTitle = document.getElementById('setHeroTitle').value;
-            settings.heroMain = document.getElementById('setHeroMain').value;
-            settings.heroSub = document.getElementById('setHeroSub').value;
+            settings.heroImg = document.getElementById('setHeroImg').value; settings.docLink = document.getElementById('setDocLink').value;
             syncSettings(); document.getElementById('adminModal').classList.remove('active');
         }
 
@@ -604,14 +468,14 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             
             let fighterData = {
                 id: idField ? parseInt(idField) : Date.now(),
-                name: document.getElementById('f_name').value, record: document.getElementById('f_record').value,
-                imageUrl: document.getElementById('f_img').value || '[https://via.placeholder.com/400x500/111/444?text=FOTO](https://via.placeholder.com/400x500/111/444?text=FOTO)',
+                name: document.getElementById('f_name').value,
+                record: document.getElementById('f_record').value, // Récord manual fijo
+                imageUrl: document.getElementById('f_img').value || 'https://via.placeholder.com/400x500/111/444?text=FOTO',
                 age: document.getElementById('f_age').value, height: document.getElementById('f_height').value,
                 weight: document.getElementById('f_weight').value, reach: document.getElementById('f_reach').value,
                 stance: document.getElementById('f_stance').value, nationality: document.getElementById('f_nation').value,
-                flag: document.getElementById('f_flag').value, style: document.getElementById('f_style').value, 
-                bio: document.getElementById('f_bio').value, gallery: document.getElementById('f_gallery').value, 
-                rankings: existing ? (existing.rankings || {}) : {}
+                style: document.getElementById('f_style').value, bio: document.getElementById('f_bio').value,
+                gallery: document.getElementById('f_gallery').value, rankings: existing ? (existing.rankings || {}) : {}
             };
             if (idField) fighters = fighters.map(f => f.id === fighterData.id ? fighterData : f);
             else fighters.push(fighterData);
@@ -626,8 +490,8 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             document.getElementById('f_age').value = f.age || ''; document.getElementById('f_height').value = f.height || '';
             document.getElementById('f_weight').value = f.weight || ''; document.getElementById('f_reach').value = f.reach || '';
             document.getElementById('f_stance').value = f.stance || ''; document.getElementById('f_nation').value = f.nationality || '';
-            document.getElementById('f_flag').value = f.flag || ''; document.getElementById('f_style').value = f.style || ''; 
-            document.getElementById('f_bio').value = f.bio || ''; document.getElementById('f_gallery').value = f.gallery || '';
+            document.getElementById('f_style').value = f.style || ''; document.getElementById('f_bio').value = f.bio || '';
+            document.getElementById('f_gallery').value = f.gallery || '';
         }
 
         function deleteFighter(id) { if(confirm("¿Borrar peleador por completo?")) { fighters = fighters.filter(x => x.id !== id); syncFighters(); } }
@@ -644,13 +508,11 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
                 grid.innerHTML += `
                     <div class="fighter-card" onclick="openFighterProfile(${f.id})">
                         ${adminBtns}
-                        <div class="fighter-img-container"><img src="${f.imageUrl || '[https://via.placeholder.com/400x500/111/444?text=UTC](https://via.placeholder.com/400x500/111/444?text=UTC)'}" alt="${f.name}"></div>
+                        <div class="fighter-img-container"><img src="${f.imageUrl || 'https://via.placeholder.com/400x500/111/444?text=UTC'}" alt="${f.name}"></div>
                         <div class="fighter-info">
                             <div class="fighter-info-name">${f.name}</div>
                             <div class="fighter-info-record">${f.record || '0-0-0'}</div>
-                            <div style="font-size:0.9rem; color:#888; margin-top:5px; display:flex; justify-content:center; align-items:center;">
-                                ${f.nationality || ''} <span class="icono-bandera">${f.flag || ''}</span>
-                            </div>
+                            <div style="font-size:0.8rem; color:#888; margin-top:5px;">${f.nationality || 'URU'}</div>
                         </div>
                     </div>`;
             });
@@ -659,6 +521,7 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
         function openFighterProfile(id) {
             let f = fighters.find(x => x.id === id); if(!f) return;
             
+            // Historial desde los eventos
             let historyHTML = '';
             events.forEach(ev => {
                 ev.fights.forEach(fight => {
@@ -676,6 +539,7 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             });
             if(!historyHTML) historyHTML = '<div style="color:#888; font-size:0.9rem;">Sin historial registrado.</div>';
 
+            // Generar Galería
             let galleryHTML = '';
             if(f.gallery) {
                 let images = f.gallery.split(',').map(url => url.trim()).filter(url => url !== '');
@@ -684,13 +548,11 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
 
             document.getElementById('profileContent').innerHTML = `
                 <div class="profile-header">
-                    <img src="${f.imageUrl || '[https://via.placeholder.com/400x500/111/444?text=FOTO](https://via.placeholder.com/400x500/111/444?text=FOTO)'}" class="profile-img">
+                    <img src="${f.imageUrl || 'https://via.placeholder.com/400x500/111/444?text=FOTO'}" class="profile-img">
                     <div class="profile-title-area">
                         <div class="profile-name">${f.name}</div>
                         <div class="profile-record">REC: ${f.record || '0-0-0'}</div>
-                        <div style="color: #888; margin-top:5px; font-weight:bold; font-size:1.2rem; display:flex; align-items:center;">
-                            ${f.nationality || ''} <span class="icono-bandera" style="margin-left:8px;">${f.flag || ''}</span>
-                        </div>
+                        <div style="color: #888; margin-top:5px; font-weight:bold;">${f.nationality || ''}</div>
                     </div>
                 </div>
                 <div class="profile-body">
@@ -709,10 +571,12 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
                         <div class="profile-section-title">Historial de Peleas</div>
                         <div class="fight-history-list">${historyHTML}</div>
                     </div>
+                    
                     <div class="profile-bio">
                         <div class="profile-section-title" style="border:none; margin-bottom:5px;">Biografía y Hazañas</div>
                         ${f.bio || 'Sin biografía disponible.'}
                     </div>
+
                     ${galleryHTML ? `
                     <div style="grid-column: 1 / -1; margin-top: 10px;">
                         <div class="profile-section-title">Galería</div>
@@ -723,6 +587,7 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             document.getElementById('fighterProfileModal').classList.add('active');
         }
 
+        // RANKINGS
         function updateRanking(e) {
             e.preventDefault();
             let f_id = parseInt(document.getElementById('r_fighter').value); let cat = document.getElementById('r_cat').value; let pos = document.getElementById('r_pos').value;
@@ -749,6 +614,7 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             });
         }
 
+        // EVENTOS
         function addFightToQueue() {
             let r = document.getElementById('ev_red').value; let b = document.getElementById('ev_blue').value;
             let s = document.getElementById('ev_res').value; let m = document.getElementById('ev_method').value;
@@ -774,8 +640,15 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             let isNew = !evIdField;
             let finalId = isNew ? Date.now() : parseInt(evIdField);
 
-            let evObj = { id: finalId, name: document.getElementById('ev_name').value, date: document.getElementById('ev_date').value, imageUrl: document.getElementById('ev_img').value, fights: [...tempFights] };
+            let evObj = {
+                id: finalId,
+                name: document.getElementById('ev_name').value,
+                date: document.getElementById('ev_date').value,
+                imageUrl: document.getElementById('ev_img').value,
+                fights: [...tempFights]
+            };
 
+            // ACTUALIZAR RÉCORDS SOLO SI ES UN EVENTO NUEVO
             if(isNew) {
                 let recordsUpdated = false;
                 evObj.fights.forEach(fight => {
@@ -790,9 +663,13 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
                         if(loser) { let [w,l,d] = (loser.record || '0-0-0').split('-').map(Number); loser.record = `${w}-${l+1}-${d}`; recordsUpdated = true; }
                     }
                 });
-                if(recordsUpdated) syncFighters();
+                if(recordsUpdated) syncFighters(); // Guardar a la DB de peleadores
                 events.push(evObj);
-            } else { events = events.map(x => x.id === finalId ? evObj : x); }
+            } else {
+                // Si es edición, solo actualizamos el evento, NO tocamos los récords.
+                events = events.map(x => x.id === finalId ? evObj : x);
+            }
+
             syncEvents(); document.getElementById('adminModal').classList.remove('active');
         }
 
@@ -804,36 +681,57 @@ Copia y reemplaza tu archivo `index.html` completo con esta versión final:
             document.getElementById('ev_id').value = ev.id; document.getElementById('ev_name').value = ev.name;
             document.getElementById('ev_date').value = ev.date; document.getElementById('ev_img').value = ev.imageUrl || '';
             
+            // Llenar selectores para añadir peleas nuevas si se quiere
             let sRed = document.getElementById('ev_red'); let sBlue = document.getElementById('ev_blue');
             sRed.innerHTML = ''; sBlue.innerHTML = '';
             fighters.forEach(f => { let opt = `<option value="${f.name}">${f.name}</option>`; sRed.innerHTML += opt; sBlue.innerHTML += opt; });
+            
             tempFights = [...ev.fights]; renderTempFights();
         }
 
-        function deleteEvent(id) { if(confirm("¿Borrar el evento entero? Nota: Los récords de los peleadores no se restarán automáticamente, deberás ajustarlos manualmente si es necesario.")) { events = events.filter(e => e.id !== id); syncEvents(); } }
+        function deleteEvent(id) {
+            if(confirm("¿Borrar el evento entero? Nota: Los récords de los peleadores no se restarán automáticamente, deberás ajustarlos manualmente si es necesario.")) {
+                events = events.filter(e => e.id !== id); syncEvents();
+            }
+        }
 
         function renderEvents() {
             let grid = document.getElementById('eventsGrid'); grid.innerHTML = '';
-            let sortedEvents = [...events].reverse(); 
+            
+            let sortedEvents = [...events].reverse(); // El más nuevo primero
             sortedEvents.forEach((ev, index) => {
-                let isFeatured = index === 0; 
+                let isFeatured = index === 0; // El primer elemento es el destacado
+                
                 let posterHTML = ev.imageUrl ? `<img src="${ev.imageUrl}" class="event-poster">` : '';
+
                 let fightsHTML = ev.fights.map(f => {
                     let resHtml = '';
                     if(f.status === 'pending') resHtml = `<div class="fight-result" style="color:#fff;">⏳ EN ESPERA</div>`;
                     else if(f.status === 'red') resHtml = `<div class="fight-result">🔴 GANADOR: ${f.red} <span style="color:#fff">(${f.method})</span></div>`;
                     else if(f.status === 'blue') resHtml = `<div class="fight-result">🔵 GANADOR: ${f.blue} <span style="color:#fff">(${f.method})</span></div>`;
-                    return `<div class="fight-row"><div class="fighter-name-event red-corner">${f.red} ${f.status==='red'?'👑':''}</div><div class="vs">VS</div><div class="fighter-name-event blue-corner">${f.status==='blue'?'👑':''} ${f.blue}</div>${resHtml}</div>`;
+                    
+                    return `<div class="fight-row">
+                                <div class="fighter-name-event red-corner">${f.red} ${f.status==='red'?'👑':''}</div>
+                                <div class="vs">VS</div>
+                                <div class="fighter-name-event blue-corner">${f.status==='blue'?'👑':''} ${f.blue}</div>
+                                ${resHtml}
+                            </div>`;
                 }).join('');
+
                 grid.innerHTML += `
                     <div class="event-card ${isFeatured ? 'featured' : ''}">
                         ${posterHTML}
                         <div class="event-header">
                             <div><div class="event-name">${ev.name}</div><div class="event-date">📅 ${ev.date}</div></div>
-                            ${isAdmin ? `<div style="display:flex; gap:10px;"><button class="btn btn-gold" onclick="editEvent(${ev.id})">Editar</button><button class="btn btn-red" onclick="deleteEvent(${ev.id})">Borrar</button></div>` : ''}
+                            ${isAdmin ? `
+                            <div style="display:flex; gap:10px;">
+                                <button class="btn btn-gold" onclick="editEvent(${ev.id})">Editar</button>
+                                <button class="btn btn-red" onclick="deleteEvent(${ev.id})">Borrar</button>
+                            </div>` : ''}
                         </div>
                         <div class="fight-list">${fightsHTML}</div>
-                    </div>`;
+                    </div>
+                `;
             });
         }
     </script>
