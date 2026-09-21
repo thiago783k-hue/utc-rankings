@@ -153,7 +153,6 @@
         }
         .fighter-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(230,25,25,0.3); border-color: var(--accent-red); }
         
-        /* ESTILO ARCO DORADO (CAMPEONES) */
         .fighter-card.champion-card {
             border: 2px solid var(--accent-gold);
             box-shadow: 0 0 20px rgba(212, 175, 55, 0.35);
@@ -201,7 +200,6 @@
         .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; line-height: 1; z-index: 10; }
         .modal-close:hover { color: var(--accent-red); }
 
-        /* Fighter Profile inside Modal */
         .profile-header { display: flex; background: #000; border-bottom: 3px solid var(--accent-red); flex-wrap: wrap; }
         .profile-img { width: 300px; height: 300px; object-fit: cover; background: #111; }
         .profile-title-area { padding: 30px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
@@ -228,7 +226,6 @@
         .gallery-container::-webkit-scrollbar { height: 8px; }
         .gallery-container::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 4px; }
 
-        /* Admin Forms */
         .admin-form-container { padding: 30px; }
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
@@ -238,7 +235,6 @@
         input:focus, select:focus, textarea:focus { border-color: var(--accent-gold); }
         textarea { resize: vertical; min-height: 100px; }
 
-        /* --- MEJORAS ESPECÍFICAS PARA MÓVIL --- */
         @media (max-width: 768px) {
             nav { padding: 10px 15px; flex-wrap: wrap; gap: 10px; background: rgba(5, 5, 5, 0.98); }
             .brand { font-size: 1.5rem; }
@@ -346,9 +342,7 @@
         <div id="rosterGrid" class="roster-grid"></div>
     </div>
 
-    <!-- ================= MODALS ================= -->
-
-    <!-- Modal: Perfil del Peleador -->
+    <!-- MODALS -->
     <div id="fighterProfileModal" class="modal-overlay" onclick="closeModal(event, 'fighterProfileModal')">
         <div class="modal-content">
             <span class="modal-close" onclick="document.getElementById('fighterProfileModal').classList.remove('active')">&times;</span>
@@ -356,7 +350,6 @@
         </div>
     </div>
 
-    <!-- Modal: Admin Dashboard -->
     <div id="adminModal" class="modal-overlay" onclick="closeModal(event, 'adminModal')">
         <div class="modal-content">
             <span class="modal-close" onclick="document.getElementById('adminModal').classList.remove('active')">&times;</span>
@@ -364,14 +357,12 @@
             <div class="admin-form-container">
                 <h2 id="adminModalTitle" style="color: var(--accent-gold); margin-bottom: 20px; font-family: var(--font-title); text-transform: uppercase;">Admin</h2>
                 
-                <!-- Formulario: Configurar Inicio -->
                 <form id="formSettings" style="display: none;" onsubmit="saveSettings(event)">
                     <div class="form-group full"><label>URL Imagen de Fondo (Inicio)</label><input type="text" id="setHeroImg" placeholder="Link de una imagen..."></div>
                     <div class="form-group full"><label>Link Google Docs (Noticias)</label><input type="text" id="setDocLink" placeholder="Link del Google Docs..."></div>
                     <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Configuración</button>
                 </form>
 
-                <!-- Formulario: Registrar Highlight -->
                 <form id="formHighlight" style="display: none;" onsubmit="saveHighlight(event)">
                     <div class="form-grid">
                         <div class="form-group full">
@@ -383,8 +374,8 @@
                             <input type="file" id="hl_file" accept="video/*">
                         </div>
                         <div class="form-group full">
-                            <label>Opción B: URL del Video (YouTube Link o Embed)</label>
-                            <input type="text" id="hl_url" placeholder="https://www.youtube.com/watch?v=...">
+                            <label>Opción B: URL del Video (YouTube Link, Shorts o Embed)</label>
+                            <input type="text" id="hl_url" placeholder="https://www.youtube.com/shorts/...">
                         </div>
                         <div class="form-group full">
                             <label>Etiqueta / Categoria</label>
@@ -395,7 +386,6 @@
                     <button type="submit" id="hl_btn" class="btn btn-red" style="width: 100%; margin-top: 15px;">Publicar Highlight</button>
                 </form>
 
-                <!-- Formulario: Registrar/Editar Peleador -->
                 <form id="formFighter" style="display: none;" onsubmit="saveFighter(event)">
                     <input type="hidden" id="f_id">
                     <div class="form-grid">
@@ -412,7 +402,6 @@
                         <div class="form-group"><label>Nacionalidad</label><input type="text" id="f_nation"></div>
                         <div class="form-group full"><label>Estilo / Armas</label><input type="text" id="f_style"></div>
                         
-                        <!-- ESTADÍSTICAS DE GOLPEO Y VICTORIAS -->
                         <div class="form-group full" style="color: var(--accent-gold); font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; margin-top: 10px;">
                             🎯 Estadísticas de Golpeo (%)
                         </div>
@@ -440,7 +429,6 @@
                     <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Peleador</button>
                 </form>
 
-                <!-- Formulario: Rankings -->
                 <form id="formRank" style="display: none;" onsubmit="updateRanking(event)">
                     <div class="form-group full"><label>Seleccionar Peleador</label><select id="r_fighter" required></select></div>
                     <div class="form-group full"><label>Categoría</label>
@@ -463,7 +451,6 @@
                     <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Actualizar Ranking</button>
                 </form>
 
-                <!-- Formulario: Crear/Editar Evento -->
                 <form id="formEvent" style="display: none;" onsubmit="publishEvent(event)">
                     <input type="hidden" id="ev_id">
                     <div class="form-grid">
@@ -509,7 +496,6 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN DE FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyC4ot99oNRT6b86v2tnnewkr-XNe5rz6uA",
             authDomain: "ufc-rankings.firebaseapp.com",
@@ -560,7 +546,7 @@
 
         function closeModal(e, modalId) { if(e.target.id === modalId) document.getElementById(modalId).classList.remove('active'); }
 
-        /* --- GENERADOR DE EMBEDS Y MANEJO DE HIGHLIGHTS --- */
+        /* --- FORMATO Y EMBED DE VIDEOS (SOPORTA SHORTS) --- */
         function isVideoFile(url) {
             if (!url) return false;
             return url.includes('firebasestorage.googleapis.com') || 
@@ -570,11 +556,16 @@
 
         function formatEmbedUrl(url) {
             if(!url) return '';
-            if (url.includes('youtube.com/watch?v=')) {
+            url = url.trim();
+
+            if (url.includes('youtube.com/shorts/')) {
+                let id = url.split('shorts/')[1].split('?')[0].split('&')[0];
+                return `https://www.youtube.com/embed/${id}`;
+            } else if (url.includes('youtube.com/watch?v=')) {
                 let id = url.split('v=')[1].split('&')[0];
                 return `https://www.youtube.com/embed/${id}`;
             } else if (url.includes('youtu.be/')) {
-                let id = url.split('youtu.be/')[1].split('?')[0];
+                let id = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
                 return `https://www.youtube.com/embed/${id}`;
             }
             return url;
@@ -615,7 +606,7 @@
                     });
                 } catch (error) {
                     console.error("Error al subir a Firebase Storage:", error);
-                    if (file.size < 12 * 1024 * 1024) { // Fallback local para videos de menos de 12MB
+                    if (file.size < 12 * 1024 * 1024) {
                         progressDiv.innerText = 'Procesando archivo localmente...';
                         videoUrl = await new Promise((resolve) => {
                             let reader = new FileReader();
@@ -689,7 +680,6 @@
             });
         }
 
-        /* --- INSIGNIAS Y LOGROS --- */
         function getFighterBadges(f) {
             let badges = [];
             let [w, l, d] = (f.record || '0-0-0').split('-').map(n => parseInt(n) || 0);
@@ -1006,7 +996,6 @@
             document.getElementById('fighterProfileModal').classList.add('active');
         }
 
-        // RANKINGS
         function updateRanking(e) {
             e.preventDefault();
             let f_id = parseInt(document.getElementById('r_fighter').value); let cat = document.getElementById('r_cat').value; let pos = document.getElementById('r_pos').value;
@@ -1033,7 +1022,6 @@
             });
         }
 
-        // EVENTOS
         function addFightToQueue() {
             let r = document.getElementById('ev_red').value; let b = document.getElementById('ev_blue').value;
             let s = document.getElementById('ev_res').value; let m = document.getElementById('ev_method').value;
