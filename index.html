@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UTC DATABASE - Oficial</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
             --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         
         body { 
             background-color: var(--bg-color); color: var(--text-main); 
@@ -35,7 +35,7 @@
         /* --- NAVBAR --- */
         nav {
             position: fixed; top: 0; width: 100%; background: rgba(5, 5, 5, 0.95);
-            backdrop-filter: blur(10px); z-index: 1000; border-bottom: 2px solid var(--accent-red);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 1000; border-bottom: 2px solid var(--accent-red);
             display: flex; justify-content: space-between; align-items: center; padding: 15px 30px;
         }
         .brand { font-family: var(--font-title); font-size: 2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
@@ -50,13 +50,14 @@
         .btn { 
             font-family: var(--font-title); font-size: 1rem; text-transform: uppercase; 
             padding: 8px 16px; border: none; cursor: pointer; border-radius: 4px; font-weight: 600; transition: all 0.3s;
+            display: inline-flex; align-items: center; justify-content: center;
         }
         .btn-gold { background: var(--accent-gold); color: #000; }
-        .btn-gold:hover { background: #b5952f; box-shadow: 0 0 10px rgba(212,175,55,0.5); }
+        .btn-gold:hover, .btn-gold:active { background: #b5952f; box-shadow: 0 0 10px rgba(212,175,55,0.5); }
         .btn-red { background: var(--accent-red); color: #fff; }
-        .btn-red:hover { background: var(--accent-red-hover); box-shadow: 0 0 10px rgba(230,25,25,0.5); }
+        .btn-red:hover, .btn-red:active { background: var(--accent-red-hover); box-shadow: 0 0 10px rgba(230,25,25,0.5); }
         .btn-dark { background: #222; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
-        .btn-dark:hover { background: var(--accent-gold); color: #000; }
+        .btn-dark:hover, .btn-dark:active { background: var(--accent-gold); color: #000; }
 
         /* --- HERO & NEWS SECTION --- */
         .hero-section {
@@ -70,7 +71,7 @@
         }
         .news-container {
             position: relative; z-index: 10; width: 90%; max-width: 800px; height: 70%;
-            background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px);
+            background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; overflow: hidden;
         }
@@ -89,7 +90,6 @@
         .events-grid { display: flex; flex-direction: column; gap: 40px; max-width: 1000px; margin: 0 auto; }
         .event-card { background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: transform 0.3s; }
         
-        /* Estilo especial para la última cartelera (Destacada) */
         .event-card.featured { 
             border: 2px solid var(--accent-gold); 
             box-shadow: 0 15px 50px rgba(212, 175, 55, 0.15); 
@@ -99,7 +99,8 @@
         .event-card.featured .event-poster { height: 500px; }
         .event-card:not(.featured) .event-poster { height: 250px; opacity: 0.8; }
 
-        .event-header { background: linear-gradient(90deg, #1a0000 0%, #000000 100%); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .event-header { background: linear-gradient(90deg, #1a0000 0%, #000000 100%); padding: 20px; display: flex; justify-content: space-between; align-items: center; user-select: none; }
+        .event-header:hover { background: linear-gradient(90deg, #2a0000 0%, #111111 100%); }
         .event-name { font-family: var(--font-title); font-size: 2.2rem; font-weight: 700; color: #fff; text-transform: uppercase; line-height: 1.1; }
         .event-card:not(.featured) .event-name { font-size: 1.5rem; }
         .event-date { color: var(--accent-gold); font-weight: 700; font-size: 1.1rem; margin-top: 5px; }
@@ -116,7 +117,7 @@
         .ranking-header { background: #111; padding: 15px; font-family: var(--font-title); font-size: 1.5rem; text-align: center; color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); text-transform: uppercase; }
         .ranking-list { display: flex; flex-direction: column; }
         .ranking-item { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #222; transition: background 0.2s; cursor: pointer; }
-        .ranking-item:hover { background: #1a1a1a; }
+        .ranking-item:hover, .ranking-item:active { background: #1a1a1a; }
         .rank-champ { background: linear-gradient(90deg, rgba(212,175,55,0.1), transparent); border-left: 3px solid var(--accent-gold); }
         .rank-num { width: 40px; font-size: 1.2rem; font-weight: 900; color: var(--text-muted); }
         .rank-champ .rank-num { color: var(--accent-gold); }
@@ -145,7 +146,7 @@
         /* --- MODALS (POPUPS) --- */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 2000;
             display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
         }
         .modal-overlay.active { display: flex; opacity: 1; }
@@ -193,14 +194,108 @@
         input, select, textarea { background: #0a0a0a; border: 1px solid #333; color: white; padding: 12px; border-radius: 4px; font-size: 1rem; outline: none; font-family: var(--font-body); }
         input:focus, select:focus, textarea:focus { border-color: var(--accent-gold); }
         textarea { resize: vertical; min-height: 100px; }
-        
+
+        /* ========================================================= */
+        /* --- MEJORAS ESPECÍFICAS PARA MÓVIL (MOBILE ENHANCEMENTS) --- */
+        /* ========================================================= */
         @media (max-width: 768px) {
-            .profile-header { flex-direction: column; }
-            .profile-img { width: 100%; height: auto; aspect-ratio: 1/1; }
-            .profile-body { grid-template-columns: 1fr; }
+            nav { 
+                padding: 10px 15px; 
+                flex-wrap: wrap; 
+                gap: 10px;
+                background: rgba(5, 5, 5, 0.98);
+            }
+            .brand { font-size: 1.5rem; }
+            
+            /* Menú deslizable horizontal para accesibilidad rápida en táctil */
+            .nav-links { 
+                display: flex; 
+                width: 100%; 
+                order: 3; 
+                overflow-x: auto; 
+                padding: 6px 0 2px 0;
+                gap: 10px; 
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            .nav-links::-webkit-scrollbar { display: none; }
+            .nav-links a { 
+                font-size: 0.9rem; 
+                background: rgba(255, 255, 255, 0.05); 
+                padding: 6px 14px; 
+                border-radius: 20px; 
+                border: 1px solid rgba(255,255,255,0.1); 
+            }
+            .nav-links a:active { background: var(--accent-gold); color: #000; }
+
+            .auth-panel { gap: 8px; flex-wrap: wrap; }
+            .admin-controls { flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
+            .btn { font-size: 0.85rem; padding: 6px 12px; border-radius: 6px; }
+
+            /* Hero y noticias responsivo */
+            .hero-section { height: auto; min-height: 85vh; padding: 120px 10px 40px; }
+            .news-container { width: 100%; height: 480px; border-radius: 8px; }
+            .news-header { font-size: 1.2rem; padding: 10px; }
+
+            /* Secciones y Títulos */
+            .section-container { padding: 45px 12px; }
+            .section-title { font-size: 2.2rem; margin-bottom: 30px; }
+
+            /* Roster y Filtros */
+            .search-bar { padding: 12px 18px; font-size: 1rem; }
+            .roster-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+            .fighter-img-container { height: 180px; }
+            .fighter-info { padding: 10px; }
+            .fighter-info-name { font-size: 1.2rem; }
+            .fighter-info-record { font-size: 0.95rem; }
+
+            /* Carteleras en Móvil */
+            .event-card.featured { transform: none; }
+            .event-card.featured .event-poster { height: 240px; }
+            .event-card:not(.featured) .event-poster { height: 160px; }
+            .event-header { padding: 12px 15px; flex-direction: column; align-items: flex-start; gap: 10px; }
+            .event-header > div:last-child { width: 100%; justify-content: space-between; }
+            .event-name { font-size: 1.5rem !important; }
+            .fight-list { padding: 10px; gap: 10px; }
+            .fight-row { padding: 10px; grid-template-columns: 1fr auto 1fr; gap: 5px; }
+            .fighter-name-event { font-size: 1rem; }
+
+            /* Rankings en Móvil */
+            .rankings-grid { grid-template-columns: 1fr; gap: 20px; }
+
+            /* Modal Estilo Bottom-Sheet para Móvil con cierre accesible */
+            .modal-overlay { align-items: flex-end; }
+            .modal-content { 
+                width: 100%; 
+                max-height: 92vh; 
+                border-bottom-left-radius: 0; 
+                border-bottom-right-radius: 0; 
+                border-top-left-radius: 16px; 
+                border-top-right-radius: 16px; 
+                border-top: 3px solid var(--accent-gold);
+            }
+            .modal-close { 
+                top: 10px; right: 15px; 
+                background: rgba(0,0,0,0.7); 
+                width: 36px; height: 36px; 
+                border-radius: 50%; 
+                display: flex; align-items: center; justify-content: center; 
+                font-size: 1.5rem; border: 1px solid #444;
+            }
+            .profile-header { flex-direction: column; text-align: center; }
+            .profile-img { width: 100%; height: 260px; }
+            .profile-title-area { padding: 20px 15px; align-items: center; }
+            .profile-name { font-size: 2.2rem; }
+            .profile-body { padding: 15px; grid-template-columns: 1fr; gap: 20px; }
+            
+            .admin-form-container { padding: 20px 15px; }
             .form-grid { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
-            .event-card.featured .event-poster { height: 300px; }
+
+            /* Feedback de pulsación táctil nativo */
+            .fighter-card:active, .ranking-item:active, .event-card:active {
+                transform: scale(0.98);
+            }
         }
     </style>
 </head>
@@ -251,7 +346,7 @@
     <div id="roster" class="section-container">
         <h2 class="section-title">Roster</h2>
         <div class="controls-bar">
-            <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Buscar peleador por nombre..." oninput="renderRoster()">
+            <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Buscar peleador..." oninput="renderRoster()">
         </div>
         <div id="rosterGrid" class="roster-grid"></div>
     </div>
@@ -298,7 +393,21 @@
                         <div class="form-group"><label>Nacionalidad</label><input type="text" id="f_nation"></div>
                         <div class="form-group full"><label>Estilo / Armas</label><input type="text" id="f_style"></div>
                         
-                        <!-- NUEVOS CAMPOS: Bio y Galeria -->
+                        <!-- ESTADÍSTICAS DE GOLPEO Y VICTORIAS -->
+                        <div class="form-group full" style="color: var(--accent-gold); font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; margin-top: 10px;">
+                            🎯 Estadísticas de Golpeo (%)
+                        </div>
+                        <div class="form-group"><label>Golpes a Cabeza (%)</label><input type="number" id="f_head" min="0" max="100" placeholder="Ej: 60"></div>
+                        <div class="form-group"><label>Golpes a Torso (%)</label><input type="number" id="f_body" min="0" max="100" placeholder="Ej: 25"></div>
+                        <div class="form-group"><label>Golpes a Piernas (%)</label><input type="number" id="f_legs" min="0" max="100" placeholder="Ej: 15"></div>
+
+                        <div class="form-group full" style="color: var(--accent-gold); font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 5px; margin-top: 10px;">
+                            🏆 Desglose de Victorias
+                        </div>
+                        <div class="form-group"><label>Victorias por KO / TKO</label><input type="number" id="f_ko" min="0" placeholder="Ej: 3"></div>
+                        <div class="form-group"><label>Victorias por Sumisión</label><input type="number" id="f_sub" min="0" placeholder="Ej: 2"></div>
+                        <div class="form-group"><label>Victorias por Decisión</label><input type="number" id="f_dec" min="0" placeholder="Ej: 1"></div>
+
                         <div class="form-group full">
                             <label>Biografía / Hazañas</label>
                             <textarea id="f_bio" placeholder="Escribe aquí los logros, historia y hazañas del peleador..."></textarea>
@@ -469,13 +578,20 @@
             let fighterData = {
                 id: idField ? parseInt(idField) : Date.now(),
                 name: document.getElementById('f_name').value,
-                record: document.getElementById('f_record').value, // Récord manual fijo
+                record: document.getElementById('f_record').value,
                 imageUrl: document.getElementById('f_img').value || 'https://via.placeholder.com/400x500/111/444?text=FOTO',
                 age: document.getElementById('f_age').value, height: document.getElementById('f_height').value,
                 weight: document.getElementById('f_weight').value, reach: document.getElementById('f_reach').value,
                 stance: document.getElementById('f_stance').value, nationality: document.getElementById('f_nation').value,
                 style: document.getElementById('f_style').value, bio: document.getElementById('f_bio').value,
-                gallery: document.getElementById('f_gallery').value, rankings: existing ? (existing.rankings || {}) : {}
+                gallery: document.getElementById('f_gallery').value,
+                head: document.getElementById('f_head').value || '0',
+                body: document.getElementById('f_body').value || '0',
+                legs: document.getElementById('f_legs').value || '0',
+                ko: document.getElementById('f_ko').value || '0',
+                sub: document.getElementById('f_sub').value || '0',
+                dec: document.getElementById('f_dec').value || '0',
+                rankings: existing ? (existing.rankings || {}) : {}
             };
             if (idField) fighters = fighters.map(f => f.id === fighterData.id ? fighterData : f);
             else fighters.push(fighterData);
@@ -492,6 +608,12 @@
             document.getElementById('f_stance').value = f.stance || ''; document.getElementById('f_nation').value = f.nationality || '';
             document.getElementById('f_style').value = f.style || ''; document.getElementById('f_bio').value = f.bio || '';
             document.getElementById('f_gallery').value = f.gallery || '';
+            document.getElementById('f_head').value = f.head || '';
+            document.getElementById('f_body').value = f.body || '';
+            document.getElementById('f_legs').value = f.legs || '';
+            document.getElementById('f_ko').value = f.ko || '';
+            document.getElementById('f_sub').value = f.sub || '';
+            document.getElementById('f_dec').value = f.dec || '';
         }
 
         function deleteFighter(id) { if(confirm("¿Borrar peleador por completo?")) { fighters = fighters.filter(x => x.id !== id); syncFighters(); } }
@@ -546,6 +668,34 @@
                 images.forEach(imgUrl => { galleryHTML += `<img src="${imgUrl}" class="gallery-img" onclick="window.open('${imgUrl}', '_blank')">`; });
             }
 
+            // CÁLCULO DE ESTADÍSTICAS DE GOLPEO Y MÉTODOS DE VICTORIA
+            let headVal = parseInt(f.head) || 0;
+            let bodyVal = parseInt(f.body) || 0;
+            let legsVal = parseInt(f.legs) || 0;
+            let koVal = parseInt(f.ko) || 0;
+            let subVal = parseInt(f.sub) || 0;
+            let decVal = parseInt(f.dec) || 0;
+
+            let mostTargetedZone = 'Sin datos';
+            if (headVal > 0 || bodyVal > 0 || legsVal > 0) {
+                let maxTarget = Math.max(headVal, bodyVal, legsVal);
+                let zones = [];
+                if (headVal === maxTarget) zones.push('Cabeza');
+                if (bodyVal === maxTarget) zones.push('Torso');
+                if (legsVal === maxTarget) zones.push('Piernas');
+                mostTargetedZone = `${zones.join(' / ')} (${maxTarget}%)`;
+            }
+
+            let mostWinMethod = 'Sin datos';
+            if (koVal > 0 || subVal > 0 || decVal > 0) {
+                let maxWins = Math.max(koVal, subVal, decVal);
+                let methods = [];
+                if (koVal === maxWins) methods.push('KO / TKO');
+                if (subVal === maxWins) methods.push('Sumisión');
+                if (decVal === maxWins) methods.push('Decisión');
+                mostWinMethod = `${methods.join(' / ')} (${maxWins})`;
+            }
+
             document.getElementById('profileContent').innerHTML = `
                 <div class="profile-header">
                     <img src="${f.imageUrl || 'https://via.placeholder.com/400x500/111/444?text=FOTO'}" class="profile-img">
@@ -557,7 +707,7 @@
                 </div>
                 <div class="profile-body">
                     <div>
-                        <div class="profile-section-title">Estadísticas</div>
+                        <div class="profile-section-title">Datos Biológicos</div>
                         <div class="stat-grid">
                             <div class="stat-item"><span class="stat-label">Edad</span><span class="stat-val">${f.age || '-'}</span></div>
                             <div class="stat-item"><span class="stat-label">Altura</span><span class="stat-val">${f.height || '-'}</span></div>
@@ -570,6 +720,68 @@
                     <div>
                         <div class="profile-section-title">Historial de Peleas</div>
                         <div class="fight-history-list">${historyHTML}</div>
+                    </div>
+
+                    <!-- ESTADÍSTICAS -->
+                    <div style="grid-column: 1 / -1;">
+                        <div class="profile-section-title">Estadísticas de Golpeo y Métodos de Victoria</div>
+                        <div class="stat-grid" style="grid-template-columns: 1fr; gap: 20px;">
+                            
+                            <!-- BARRAS DE ZONA DE GOLPEO -->
+                            <div style="background: #0a0a0a; padding: 15px; border-radius: 6px; border: 1px solid #222;">
+                                <div style="font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 10px;">
+                                    🎯 Zonas de Golpeo (¿Dónde golpea más?: <span style="color:#fff">${mostTargetedZone}</span>)
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <div style="display:flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 3px;">
+                                        <span>Cabeza</span><b>${headVal}%</b>
+                                    </div>
+                                    <div style="background:#222; border-radius:3px; height:8px; overflow:hidden;">
+                                        <div style="background:var(--accent-red); width:${headVal}%; height:100%;"></div>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom: 10px;">
+                                    <div style="display:flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 3px;">
+                                        <span>Torso</span><b>${bodyVal}%</b>
+                                    </div>
+                                    <div style="background:#222; border-radius:3px; height:8px; overflow:hidden;">
+                                        <div style="background:var(--accent-gold); width:${bodyVal}%; height:100%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display:flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 3px;">
+                                        <span>Piernas</span><b>${legsVal}%</b>
+                                    </div>
+                                    <div style="background:#222; border-radius:3px; height:8px; overflow:hidden;">
+                                        <div style="background:#4488ff; width:${legsVal}%; height:100%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DESGLOSE DE VICTORIAS -->
+                            <div style="background: #0a0a0a; padding: 15px; border-radius: 6px; border: 1px solid #222; display:flex; flex-direction:column; justify-content:center;">
+                                <div>
+                                    <div style="font-size: 0.9rem; color: var(--accent-gold); font-weight: bold; margin-bottom: 10px;">
+                                        🏆 Desglose de Victorias (Ganó más por: <span style="color:#fff">${mostWinMethod}</span>)
+                                    </div>
+                                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; text-align: center;">
+                                        <div style="background:#111; padding:8px 5px; border-radius:4px; border: 1px solid #333;">
+                                            <div style="font-size:0.75rem; color:var(--text-muted);">KO / TKO</div>
+                                            <div style="font-size:1.3rem; font-weight:bold; color:#ff4444;">${koVal}</div>
+                                        </div>
+                                        <div style="background:#111; padding:8px 5px; border-radius:4px; border: 1px solid #333;">
+                                            <div style="font-size:0.75rem; color:var(--text-muted);">SUMISIÓN</div>
+                                            <div style="font-size:1.3rem; font-weight:bold; color:var(--accent-gold);">${subVal}</div>
+                                        </div>
+                                        <div style="background:#111; padding:8px 5px; border-radius:4px; border: 1px solid #333;">
+                                            <div style="font-size:0.75rem; color:var(--text-muted);">DECISIÓN</div>
+                                            <div style="font-size:1.3rem; font-weight:bold; color:#4488ff;">${decVal}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                     
                     <div class="profile-bio">
@@ -648,7 +860,6 @@
                 fights: [...tempFights]
             };
 
-            // ACTUALIZAR RÉCORDS SOLO SI ES UN EVENTO NUEVO
             if(isNew) {
                 let recordsUpdated = false;
                 evObj.fights.forEach(fight => {
@@ -663,10 +874,9 @@
                         if(loser) { let [w,l,d] = (loser.record || '0-0-0').split('-').map(Number); loser.record = `${w}-${l+1}-${d}`; recordsUpdated = true; }
                     }
                 });
-                if(recordsUpdated) syncFighters(); // Guardar a la DB de peleadores
+                if(recordsUpdated) syncFighters();
                 events.push(evObj);
             } else {
-                // Si es edición, solo actualizamos el evento, NO tocamos los récords.
                 events = events.map(x => x.id === finalId ? evObj : x);
             }
 
@@ -681,7 +891,6 @@
             document.getElementById('ev_id').value = ev.id; document.getElementById('ev_name').value = ev.name;
             document.getElementById('ev_date').value = ev.date; document.getElementById('ev_img').value = ev.imageUrl || '';
             
-            // Llenar selectores para añadir peleas nuevas si se quiere
             let sRed = document.getElementById('ev_red'); let sBlue = document.getElementById('ev_blue');
             sRed.innerHTML = ''; sBlue.innerHTML = '';
             fighters.forEach(f => { let opt = `<option value="${f.name}">${f.name}</option>`; sRed.innerHTML += opt; sBlue.innerHTML += opt; });
@@ -695,12 +904,25 @@
             }
         }
 
+        function toggleEventContent(bodyId, toggleId) {
+            let bodyEl = document.getElementById(bodyId);
+            let toggleEl = document.getElementById(toggleId);
+            if (!bodyEl) return;
+            if (bodyEl.style.display === 'none' || bodyEl.style.display === '') {
+                bodyEl.style.display = 'block';
+                if (toggleEl) toggleEl.innerText = '▲ Ocultar';
+            } else {
+                bodyEl.style.display = 'none';
+                if (toggleEl) toggleEl.innerText = '▼ Abrir';
+            }
+        }
+
         function renderEvents() {
             let grid = document.getElementById('eventsGrid'); grid.innerHTML = '';
             
-            let sortedEvents = [...events].reverse(); // El más nuevo primero
+            let sortedEvents = [...events].reverse();
             sortedEvents.forEach((ev, index) => {
-                let isFeatured = index === 0; // El primer elemento es el destacado
+                let isFeatured = index === 0;
                 
                 let posterHTML = ev.imageUrl ? `<img src="${ev.imageUrl}" class="event-poster">` : '';
 
@@ -720,16 +942,28 @@
 
                 grid.innerHTML += `
                     <div class="event-card ${isFeatured ? 'featured' : ''}">
-                        ${posterHTML}
-                        <div class="event-header">
-                            <div><div class="event-name">${ev.name}</div><div class="event-date">📅 ${ev.date}</div></div>
-                            ${isAdmin ? `
-                            <div style="display:flex; gap:10px;">
-                                <button class="btn btn-gold" onclick="editEvent(${ev.id})">Editar</button>
-                                <button class="btn btn-red" onclick="deleteEvent(${ev.id})">Borrar</button>
-                            </div>` : ''}
+                        <div class="event-header" style="cursor: pointer;" onclick="toggleEventContent('event-body-${ev.id}', 'event-toggle-${ev.id}')">
+                            <div>
+                                <div class="event-name">
+                                    ${ev.name} 
+                                    ${!isFeatured ? '<span style="font-size:0.8rem; color:var(--text-muted); font-weight:normal; text-transform:none; margin-left:8px;">(Haz clic para abrir/cerrar)</span>' : ''}
+                                </div>
+                                <div class="event-date">📅 ${ev.date}</div>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                ${isAdmin ? `
+                                <button class="btn btn-gold" onclick="event.stopPropagation(); editEvent(${ev.id})">Editar</button>
+                                <button class="btn btn-red" onclick="event.stopPropagation(); deleteEvent(${ev.id})">Borrar</button>
+                                ` : ''}
+                                <button class="btn btn-dark" style="padding: 4px 10px; font-size: 0.85rem;" onclick="event.stopPropagation(); toggleEventContent('event-body-${ev.id}', 'event-toggle-${ev.id}')">
+                                    <span id="event-toggle-${ev.id}">${isFeatured ? '▲ Ocultar' : '▼ Abrir'}</span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="fight-list">${fightsHTML}</div>
+                        <div id="event-body-${ev.id}" style="display: ${isFeatured ? 'block' : 'none'};">
+                            ${posterHTML}
+                            <div class="fight-list">${fightsHTML}</div>
+                        </div>
                     </div>
                 `;
             });
