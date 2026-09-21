@@ -3,277 +3,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UTC DATABASE - Live Sync</title>
+    <title>UTC DATABASE - Oficial</title>
+    
+    <!-- Google Fonts para un look más "Tuff" -->
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
         :root {
-            --bg-color: #0b0b0b;
-            --card-bg: #161616;
-            --accent-red: #d20a0a;
+            --bg-color: #050505;
+            --bg-secondary: #111111;
+            --card-bg: #1a1a1a;
+            --accent-red: #e61919;
+            --accent-red-hover: #b31212;
             --accent-gold: #d4af37;
-            --text-color: #f1f1f1;
-            --text-muted: #888888;
-            --border-color: #262626;
+            --text-main: #ffffff;
+            --text-muted: #8a8a8a;
+            --border-color: #333333;
+            --font-title: 'Oswald', sans-serif;
+            --font-body: 'Roboto', sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); line-height: 1.5; padding: 15px; }
-
-        header {
-            display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;
-            border-bottom: 3px solid var(--accent-red); padding-bottom: 12px; flex-wrap: wrap; gap: 12px;
-        }
-        header h1 { font-size: 1.8rem; letter-spacing: 1px; text-transform: uppercase; font-weight: 900; }
-        header h1 span { color: var(--accent-red); }
-
-        .auth-panel {
-            background-color: var(--card-bg); border: 1px solid var(--border-color);
-            padding: 6px 12px; border-radius: 6px; font-size: 0.85rem; display: flex; align-items: center; gap: 10px;
-        }
-        .auth-btn {
-            background-color: var(--accent-gold); color: #000; border: none; padding: 5px 10px;
-            font-weight: bold; cursor: pointer; border-radius: 4px; font-size: 0.75rem; text-transform: uppercase;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            background-color: var(--bg-color); color: var(--text-main); 
+            font-family: var(--font-body); overflow-x: hidden; scroll-behavior: smooth;
         }
 
-        .container { max-width: 1300px; margin: 0 auto; }
-        .nav-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
-        .tab-btn {
-            background-color: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color);
-            padding: 8px 12px; cursor: pointer; font-weight: bold; text-transform: uppercase; border-radius: 4px;
-            font-size: 0.75rem; letter-spacing: 0.5px; transition: all 0.2s;
+        /* --- NAVBAR --- */
+        nav {
+            position: fixed; top: 0; width: 100%; background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(10px); z-index: 1000; border-bottom: 2px solid var(--accent-red);
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 30px;
         }
-        .tab-btn.active, .tab-btn:hover { background-color: var(--accent-red); border-color: var(--accent-red); }
+        .brand { font-family: var(--font-title); font-size: 2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+        .brand span { color: var(--accent-red); }
+        
+        .nav-links { display: flex; gap: 20px; }
+        .nav-links a { color: var(--text-main); text-decoration: none; font-family: var(--font-title); font-size: 1.1rem; text-transform: uppercase; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--accent-gold); }
 
-        .section { display: none; }
-        .section.active { display: block; }
-
-        .controls-bar { display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .search-input, input, select {
-            background-color: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color);
-            padding: 10px; border-radius: 4px; font-size: 0.95rem; outline: none; width: 100%;
+        .auth-panel { display: flex; align-items: center; gap: 15px; }
+        .admin-controls { display: none; gap: 10px; }
+        .btn { 
+            font-family: var(--font-title); font-size: 1rem; text-transform: uppercase; 
+            padding: 8px 16px; border: none; cursor: pointer; border-radius: 4px; font-weight: 600; transition: all 0.3s;
         }
-        .search-input { max-width: 300px; }
+        .btn-gold { background: var(--accent-gold); color: #000; }
+        .btn-gold:hover { background: #b5952f; box-shadow: 0 0 10px rgba(212,175,55,0.5); }
+        .btn-red { background: var(--accent-red); color: #fff; }
+        .btn-red:hover { background: var(--accent-red-hover); box-shadow: 0 0 10px rgba(230,25,25,0.5); }
+        .btn-dark { background: #222; color: var(--accent-gold); border: 1px solid var(--accent-gold); }
+        .btn-dark:hover { background: var(--accent-gold); color: #000; }
+
+        /* --- HERO & NEWS SECTION --- */
+        .hero-section {
+            position: relative; width: 100%; height: 90vh; min-height: 600px;
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center; padding-top: 60px;
+        }
+        .hero-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(5,5,5,1) 100%);
+        }
+        .news-container {
+            position: relative; z-index: 10; width: 90%; max-width: 800px; height: 70%;
+            background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(15px);
+            border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: flex; flex-direction: column; overflow: hidden;
+        }
+        .news-header { background: rgba(0,0,0,0.8); padding: 15px; text-align: center; font-family: var(--font-title); font-size: 1.5rem; color: var(--accent-gold); border-bottom: 1px solid var(--accent-red); }
+        .news-iframe { flex-grow: 1; width: 100%; border: none; background: #fff; }
+
+        /* --- SECTION LAYOUT --- */
+        .section-container { max-width: 1400px; margin: 0 auto; padding: 80px 20px; }
+        .section-title { 
+            font-family: var(--font-title); font-size: 3rem; text-transform: uppercase; 
+            text-align: center; margin-bottom: 50px; border-bottom: 3px solid var(--accent-red);
+            display: inline-block; padding-bottom: 10px; position: relative; left: 50%; transform: translateX(-50%);
+        }
+
+        /* --- EVENTS (CARTELERAS) --- */
+        .events-grid { display: flex; flex-direction: column; gap: 30px; max-width: 900px; margin: 0 auto; }
+        .event-card { background: var(--bg-secondary); border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .event-header { background: linear-gradient(90deg, #1a0000 0%, #000000 100%); border-bottom: 2px solid var(--accent-red); padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .event-name { font-family: var(--font-title); font-size: 1.8rem; font-weight: 700; color: #fff; text-transform: uppercase; }
+        .event-date { color: var(--accent-gold); font-weight: 700; font-size: 1rem; }
+        .fight-list { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .fight-row { background: #0a0a0a; border: 1px solid #222; border-radius: 6px; padding: 15px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; text-align: center; }
+        .fighter-name-event { font-family: var(--font-title); font-size: 1.3rem; text-transform: uppercase; }
+        .red-corner { color: #ff4444; } .blue-corner { color: #4488ff; }
+        .vs { font-weight: 900; color: var(--text-muted); font-style: italic; }
+        .fight-result { grid-column: 1 / -1; margin-top: 10px; font-size: 0.9rem; padding: 8px; background: #000; color: var(--accent-gold); border-radius: 4px; font-weight: bold; }
+        .winner-crown { color: var(--accent-gold); margin: 0 5px; }
+
+        /* --- RANKINGS --- */
+        .rankings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 30px; }
+        .ranking-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        .ranking-header { background: #111; padding: 15px; font-family: var(--font-title); font-size: 1.5rem; text-align: center; color: var(--accent-gold); border-bottom: 2px solid var(--accent-gold); text-transform: uppercase; }
+        .ranking-list { display: flex; flex-direction: column; }
+        .ranking-item { display: flex; align-items: center; padding: 12px 15px; border-bottom: 1px solid #222; transition: background 0.2s; cursor: pointer; }
+        .ranking-item:hover { background: #1a1a1a; }
+        .rank-champ { background: linear-gradient(90deg, rgba(212,175,55,0.1), transparent); border-left: 3px solid var(--accent-gold); }
+        .rank-num { width: 40px; font-size: 1.2rem; font-weight: 900; color: var(--text-muted); }
+        .rank-champ .rank-num { color: var(--accent-gold); }
+        .rank-info { flex-grow: 1; }
+        .rank-name { font-weight: bold; font-size: 1.1rem; text-transform: uppercase; }
+        .rank-rec { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* --- ROSTER --- */
+        .controls-bar { display: flex; justify-content: center; margin-bottom: 30px; }
+        .search-bar { width: 100%; max-width: 500px; padding: 15px 20px; font-size: 1.1rem; background: var(--bg-secondary); border: 1px solid var(--accent-gold); color: white; border-radius: 30px; outline: none; transition: box-shadow 0.3s; }
+        .search-bar:focus { box-shadow: 0 0 15px rgba(212,175,55,0.3); }
+
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .fighter-card { 
+            background: var(--bg-secondary); border-radius: 10px; overflow: hidden; cursor: pointer;
+            border: 1px solid var(--border-color); transition: transform 0.3s, box-shadow 0.3s; position: relative;
+        }
+        .fighter-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(230,25,25,0.3); border-color: var(--accent-red); }
+        .fighter-img-container { height: 250px; background: #0a0a0a; overflow: hidden; display: flex; align-items: center; justify-content: center; border-bottom: 3px solid var(--accent-red); }
+        .fighter-img-container img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: opacity 0.3s; }
+        .fighter-card:hover .fighter-img-container img { opacity: 1; }
+        .fighter-info { padding: 15px; text-align: center; }
+        .fighter-info-name { font-family: var(--font-title); font-size: 1.6rem; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; }
+        .fighter-info-record { color: var(--accent-gold); font-weight: 900; font-size: 1.1rem; }
+
+        /* --- MODALS (POPUPS) --- */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); z-index: 2000;
+            display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { 
+            background: var(--bg-secondary); width: 95%; max-width: 800px; max-height: 90vh; 
+            overflow-y: auto; border-radius: 12px; border: 1px solid var(--accent-gold); 
+            box-shadow: 0 0 40px rgba(0,0,0,0.8); position: relative;
+        }
+        .modal-close { position: absolute; top: 15px; right: 20px; font-size: 2rem; color: #fff; cursor: pointer; line-height: 1; z-index: 10; }
+        .modal-close:hover { color: var(--accent-red); }
+
+        /* Fighter Profile inside Modal */
+        .profile-header { display: flex; background: #000; border-bottom: 3px solid var(--accent-red); flex-wrap: wrap; }
+        .profile-img { width: 300px; height: 300px; object-fit: cover; background: #111; }
+        .profile-title-area { padding: 30px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .profile-name { font-family: var(--font-title); font-size: 3rem; text-transform: uppercase; line-height: 1; margin-bottom: 10px; }
+        .profile-record { font-size: 1.5rem; color: var(--accent-gold); font-weight: bold; }
+        .profile-body { padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .profile-section-title { font-family: var(--font-title); font-size: 1.3rem; color: var(--text-muted); border-bottom: 1px solid #333; margin-bottom: 15px; padding-bottom: 5px; text-transform: uppercase; }
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-item span { display: block; }
+        .stat-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; }
+        .stat-val { font-size: 1.1rem; font-weight: bold; }
+        .fight-history-list { display: flex; flex-direction: column; gap: 10px; }
+        .history-item { background: #111; padding: 10px; border-left: 4px solid #333; border-radius: 4px; font-size: 0.9rem; }
+        .history-item.win { border-left-color: #28a745; }
+        .history-item.loss { border-left-color: var(--accent-red); }
+
+        /* Admin Forms */
+        .admin-form-container { padding: 30px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .form-group.full { grid-column: 1 / -1; }
+        label { font-size: 0.85rem; color: var(--accent-gold); margin-bottom: 5px; text-transform: uppercase; font-weight: bold; }
+        input, select { background: #0a0a0a; border: 1px solid #333; color: white; padding: 12px; border-radius: 4px; font-size: 1rem; outline: none; }
         input:focus, select:focus { border-color: var(--accent-gold); }
-
-        .form-container {
-            background-color: var(--card-bg); padding: 20px; border-radius: 8px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.6); max-width: 800px; margin: 0 auto;
-            border-top: 4px solid var(--accent-gold); border: 1px solid var(--border-color);
+        
+        @media (max-width: 768px) {
+            .profile-header { flex-direction: column; }
+            .profile-img { width: 100%; height: auto; aspect-ratio: 1/1; }
+            .profile-body { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; } /* En móvil simplificamos el header */
         }
-        .form-grid { display: grid; grid-template-columns: 1fr; gap: 15px; }
-        @media (min-width: 768px) { .form-grid { grid-template-columns: 1fr 1fr; } }
-
-        label { display: block; margin-bottom: 5px; font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
-        button[type="submit"], .action-btn {
-            background-color: var(--accent-red); color: white; border: none; padding: 12px; width: 100%;
-            font-size: 0.95rem; font-weight: bold; text-transform: uppercase; cursor: pointer; border-radius: 4px; transition: background 0.2s;
-        }
-        button[type="submit"]:hover, .action-btn:hover { background-color: #b00808; }
-
-        .fighters-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
-        .fighter-card {
-            background-color: var(--card-bg); border-radius: 6px; overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5); border: 1px solid var(--border-color);
-            display: flex; flex-direction: column; position: relative;
-        }
-
-        .fighter-header { background: linear-gradient(180deg, #222, #111); padding: 15px 10px; text-align: center; border-bottom: 2px solid var(--accent-red); }
-        .fighter-name { font-size: 1.15rem; font-weight: 800; text-transform: uppercase; }
-        .fighter-body { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; gap: 8px; }
-        .record-box { background-color: #111; text-align: center; padding: 6px; border-radius: 4px; font-size: 1rem; color: var(--accent-gold); font-weight: 900; border: 1px solid #222; }
-        .stats-section-title { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid #222; padding-bottom: 2px; margin-top: 4px; }
-        .stat-row { display: flex; justify-content: space-between; font-size: 0.82rem; }
-        .stat-label { color: var(--text-muted); }
-        .stat-value { font-weight: 600; }
-
-        .card-admin-actions { display: flex; }
-        .card-btn { border: none; flex: 1; padding: 9px; cursor: pointer; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; transition: 0.2s; }
-        .edit-btn { background-color: #222; color: var(--accent-gold); border-top: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
-        .edit-btn:hover { background-color: var(--accent-gold); color: #000; }
-        .delete-btn { background-color: #1a1a1a; color: #ff4444; border-top: 1px solid var(--border-color); }
-        .delete-btn:hover { background-color: #ff4444; color: white; }
-
-        .rankings-wrapper { max-width: 900px; margin: 0 auto; }
-        .ranking-table-container { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 30px; }
-        .ranking-division-header { background: linear-gradient(135deg, #1f1f1f, #0d0d0d); padding: 15px 20px; font-size: 1.2rem; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid var(--accent-gold); color: var(--accent-gold); display: flex; justify-content: space-between; align-items: center; }
-        .ranking-row { display: grid; grid-template-columns: 60px 1fr 80px 110px; padding: 12px 15px; align-items: center; border-bottom: 1px solid #222; font-size: 0.95rem; }
-        .ranking-row:nth-child(even) { background-color: #131313; }
-        .ranking-row.champion-row { background: linear-gradient(90deg, rgba(212,175,55,0.15), transparent); border-left: 4px solid var(--accent-gold); }
-        .rank-pos { font-weight: 900; font-size: 1.1rem; color: var(--accent-gold); text-align: center; }
-        .rank-fighter-name { font-weight: bold; text-transform: uppercase; }
-        .rank-record { color: var(--text-muted); font-size: 0.85rem; }
-        .rank-style { font-size: 0.75rem; color: var(--text-muted); text-align: right; }
-
-        .events-container { display: flex; flex-direction: column; gap: 20px; }
-        .event-card { background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
-        .event-header { background: linear-gradient(135deg, #1f1f1f, #0d0d0d); padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--accent-gold); flex-wrap: wrap; gap: 8px; }
-        .event-title { font-size: 1.2rem; font-weight: 900; text-transform: uppercase; }
-        .event-date { color: var(--accent-gold); font-weight: bold; font-size: 0.85rem; }
-        .fights-list { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
-        .fight-row { background-color: #111; border: 1px solid #222; border-radius: 6px; padding: 12px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; text-align: center; }
-        .fighter-corner-red { font-weight: bold; font-size: 0.95rem; text-transform: uppercase; color: #ff4444; }
-        .fighter-corner-blue { font-weight: bold; font-size: 0.95rem; text-transform: uppercase; color: #4488ff; }
-        .corner-sub { font-size: 0.65rem; color: var(--text-muted); font-style: italic; }
-        .vs-badge { background-color: #222; color: var(--accent-gold); padding: 4px 8px; border-radius: 15px; font-weight: 900; font-size: 0.75rem; border: 1px solid #333; }
-        .fight-result-badge { grid-column: 1 / -1; margin-top: 6px; font-size: 0.8rem; padding: 4px; background-color: #080808; border-radius: 4px; border: 1px solid #222; }
-        .winner-text { color: var(--accent-gold); font-weight: bold; }
-        .empty-msg { text-align: center; grid-column: 1 / -1; color: var(--text-muted); padding: 30px; font-size: 1rem; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>UTC <span>DATABASE</span></h1>
+    <!-- NAVBAR -->
+    <nav>
+        <div class="brand">UTC <span>DB</span></div>
+        <div class="nav-links">
+            <a href="#inicio">Inicio</a>
+            <a href="#eventos">Eventos</a>
+            <a href="#rankings">Rankings</a>
+            <a href="#roster">Roster</a>
+        </div>
         <div class="auth-panel">
-            <span id="userStatusText">Modo: Visitante</span>
-            <button id="authBtn" class="auth-btn" onclick="toggleAuth()">Ser Admin</button>
-        </div>
-    </header>
-
-    <div class="container">
-        <div class="nav-tabs">
-            <button class="tab-btn active" onclick="switchTab('roster')">Roster</button>
-            <button class="tab-btn" onclick="switchTab('rankings')">Rankings</button>
-            <button class="tab-btn" onclick="switchTab('events')">Carteleras</button>
-            <button id="tabRegisterBtn" class="tab-btn" onclick="switchTab('register')" style="display: none;">+ Luchador</button>
-            <button id="tabRankAdminBtn" class="tab-btn" onclick="switchTab('rankAdmin')" style="display: none;">⚙️ Rankings</button>
-            <button id="tabEventBtn" class="tab-btn" onclick="switchTab('createEvent')" style="display: none;">+ Evento</button>
-        </div>
-
-        <!-- ROSTER -->
-        <div id="roster-section" class="section active">
-            <div class="controls-bar">
-                <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar peleador..." oninput="renderFighters()">
+            <div id="adminControls" class="admin-controls">
+                <button class="btn btn-dark" onclick="openAdminModal('settings')">⚙️ Inicio</button>
+                <button class="btn btn-dark" onclick="openAdminModal('event')">+ Evento</button>
+                <button class="btn btn-dark" onclick="openAdminModal('rank')">👑 Ranks</button>
+                <button class="btn btn-dark" onclick="openAdminModal('fighter')">+ Peleador</button>
             </div>
-            <div id="fightersGrid" class="fighters-grid"></div>
+            <button id="authBtn" class="btn btn-gold" onclick="toggleAuth()">Ser Admin</button>
         </div>
+    </nav>
 
-        <!-- RANKINGS OFICIALES -->
-        <div id="rankings-section" class="section">
-            <div class="rankings-wrapper" id="rankingsContainer"></div>
+    <!-- HERO & NEWS -->
+    <div id="inicio" class="hero-section" style="background-image: url('https://images.unsplash.com/photo-1544365558-35aa4afcf11f?q=80&w=2036&auto=format&fit=crop');">
+        <div class="hero-overlay"></div>
+        <div class="news-container">
+            <div class="news-header">ÚLTIMAS NOTICIAS UTC</div>
+            <iframe id="newsIframe" class="news-iframe" src="" allowfullscreen></iframe>
         </div>
+    </div>
 
-        <!-- CARTELERAS -->
-        <div id="events-section" class="section">
-            <div id="eventsContainer" class="events-container"></div>
+    <!-- EVENTOS -->
+    <div id="eventos" class="section-container">
+        <h2 class="section-title">Carteleras</h2>
+        <div id="eventsGrid" class="events-grid"></div>
+    </div>
+
+    <!-- RANKINGS -->
+    <div id="rankings" class="section-container" style="background-color: #0a0a0a;">
+        <h2 class="section-title">Rankings Oficiales</h2>
+        <div id="rankingsGrid" class="rankings-grid"></div>
+    </div>
+
+    <!-- ROSTER -->
+    <div id="roster" class="section-container">
+        <h2 class="section-title">Roster</h2>
+        <div class="controls-bar">
+            <input type="text" id="searchInput" class="search-bar" placeholder="🔍 Buscar peleador por nombre..." oninput="renderRoster()">
         </div>
+        <div id="rosterGrid" class="roster-grid"></div>
+    </div>
 
-        <!-- FORMULARIO PELEADOR -->
-        <div id="register-section" class="section">
-            <div class="form-container">
-                <h3 id="formTitle" style="margin-bottom: 15px; text-transform: uppercase; color: var(--accent-gold); text-align: center;">Registrar / Editar Luchador</h3>
-                <form id="fighterForm" onsubmit="saveFighter(event)">
-                    <input type="hidden" id="fighterId">
+    <!-- ================= MODALS ================= -->
+
+    <!-- Modal: Perfil del Peleador -->
+    <div id="fighterProfileModal" class="modal-overlay" onclick="closeModal(event, 'fighterProfileModal')">
+        <div class="modal-content">
+            <span class="modal-close" onclick="document.getElementById('fighterProfileModal').classList.remove('active')">&times;</span>
+            <div id="profileContent"></div>
+        </div>
+    </div>
+
+    <!-- Modal: Admin Dashboard (Múltiples Formularios) -->
+    <div id="adminModal" class="modal-overlay" onclick="closeModal(event, 'adminModal')">
+        <div class="modal-content">
+            <span class="modal-close" onclick="document.getElementById('adminModal').classList.remove('active')">&times;</span>
+            
+            <div class="admin-form-container">
+                <h2 id="adminModalTitle" style="color: var(--accent-gold); margin-bottom: 20px; font-family: var(--font-title); text-transform: uppercase;">Admin</h2>
+                
+                <!-- Formulario: Configurar Inicio -->
+                <form id="formSettings" style="display: none;" onsubmit="saveSettings(event)">
+                    <div class="form-group full">
+                        <label>URL Imagen de Fondo (Inicio)</label>
+                        <input type="text" id="setHeroImg" placeholder="Link de una imagen...">
+                    </div>
+                    <div class="form-group full">
+                        <label>Link Google Docs (Noticias)</label>
+                        <input type="text" id="setDocLink" placeholder="Link del Google Docs...">
+                        <small style="color: #888; margin-top: 5px;">Recomendación: En Google Docs ve a Archivo > Compartir > Publicar en la web, y pega ese enlace aquí.</small>
+                    </div>
+                    <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Configuración</button>
+                </form>
+
+                <!-- Formulario: Registrar/Editar Peleador -->
+                <form id="formFighter" style="display: none;" onsubmit="saveFighter(event)">
+                    <input type="hidden" id="f_id">
                     <div class="form-grid">
-                        <div class="form-group"><label>Nombre</label><input type="text" id="name" required></div>
-                        <div class="form-group"><label>Récord (V-D-E)</label><input type="text" id="record" required></div>
-                        <div class="form-group"><label>Edad</label><input type="text" id="age"></div>
-                        <div class="form-group"><label>Altura</label><input type="text" id="height" required></div>
-                        <div class="form-group"><label>Peso</label><input type="text" id="weight" required></div>
-                        <div class="form-group"><label>Alcance</label><input type="text" id="reach"></div>
-                        <div class="form-group"><label>Guardia</label><input type="text" id="stance"></div>
-                        <div class="form-group"><label>Nacionalidad</label><input type="text" id="nationality"></div>
-                        <div class="form-group full-width" style="grid-column: 1 / -1;"><label>Estilo / Armas</label><input type="text" id="style"></div>
+                        <div class="form-group full"><label>URL Foto (Retrato)</label><input type="text" id="f_img" placeholder="Link de imagen del peleador"></div>
+                        <div class="form-group"><label>Nombre</label><input type="text" id="f_name" required></div>
+                        <div class="form-group"><label>Récord Base (V-D-E)</label><input type="text" id="f_record" required placeholder="Ej: 0-0-0">
+                            <small style="color:#888;">El sistema sumará automáticamente las victorias/derrotas de los eventos a este récord base.</small>
+                        </div>
+                        <div class="form-group"><label>Edad</label><input type="text" id="f_age"></div>
+                        <div class="form-group"><label>Altura</label><input type="text" id="f_height"></div>
+                        <div class="form-group"><label>Peso</label><input type="text" id="f_weight"></div>
+                        <div class="form-group"><label>Alcance</label><input type="text" id="f_reach"></div>
+                        <div class="form-group"><label>Guardia</label><input type="text" id="f_stance"></div>
+                        <div class="form-group"><label>Nacionalidad</label><input type="text" id="f_nation"></div>
+                        <div class="form-group full"><label>Estilo / Armas</label><input type="text" id="f_style"></div>
                     </div>
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button type="button" class="action-btn" style="background-color: #333;" onclick="switchTab('roster')">Cancelar</button>
-                        <button type="submit" class="action-btn">Guardar</button>
-                    </div>
+                    <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Guardar Peleador</button>
                 </form>
-            </div>
-        </div>
 
-        <!-- CONFIGURAR RANKINGS -->
-        <div id="rank-admin-section" class="section">
-            <div class="form-container" style="max-width: 600px;">
-                <h3 style="margin-bottom: 15px; text-transform: uppercase; color: var(--accent-gold); text-align: center;">Asignar Posición por Categoría</h3>
-                <form onsubmit="updateRankingPosition(event)">
-                    <div class="form-grid" style="grid-template-columns: 1fr;">
-                        <div class="form-group">
-                            <label>Seleccionar Peleador</label>
-                            <select id="rankFighterSelect" required></select>
-                        </div>
-                        <div class="form-group">
-                            <label>Categoría de Peso</label>
-                            <select id="rankCategorySelect" required>
-                                <option value="Pesado (Heavyweight)">Pesado (Heavyweight)</option>
-                                <option value="Semipesado (Light Heavyweight)">Semipesado (Light Heavyweight)</option>
-                                <option value="Wélter (Welterweight)">Wélter (Welterweight)</option>
-                                <option value="Ligero (Lightweight)">Ligero (Lightweight)</option>
-                                <option value="Pluma (Featherweight)">Pluma (Featherweight)</option>
-                                <option value="Gallo (Bantamweight)">Gallo (Bantamweight)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Posición a Asignar</label>
-                            <select id="rankPositionSelect" required>
-                                <option value="C">👑 Campeón (C)</option>
-                                <option value="1">#1</option><option value="2">#2</option><option value="3">#3</option>
-                                <option value="4">#4</option><option value="5">#5</option><option value="6">#6</option>
-                                <option value="7">#7</option><option value="8">#8</option><option value="9">#9</option>
-                                <option value="10">#10</option><option value="UNRANKED">Quitar del Ranking</option>
-                            </select>
-                        </div>
+                <!-- Formulario: Rankings -->
+                <form id="formRank" style="display: none;" onsubmit="updateRanking(event)">
+                    <div class="form-group full"><label>Seleccionar Peleador</label><select id="r_fighter" required></select></div>
+                    <div class="form-group full">
+                        <label>Categoría</label>
+                        <select id="r_cat" required>
+                            <option value="Pesado (Heavyweight)">Pesado (Heavyweight)</option>
+                            <option value="Semipesado (Light Heavyweight)">Semipesado (Light Heavyweight)</option>
+                            <option value="Wélter (Welterweight)">Wélter (Welterweight)</option>
+                            <option value="Ligero (Lightweight)">Ligero (Lightweight)</option>
+                            <option value="Pluma (Featherweight)">Pluma (Featherweight)</option>
+                            <option value="Gallo (Bantamweight)">Gallo (Bantamweight)</option>
+                        </select>
                     </div>
-                    <button type="submit" style="margin-top: 20px;">Actualizar Posición</button>
+                    <div class="form-group full">
+                        <label>Posición</label>
+                        <select id="r_pos" required>
+                            <option value="C">👑 Campeón (C)</option>
+                            <option value="1">#1</option><option value="2">#2</option><option value="3">#3</option>
+                            <option value="4">#4</option><option value="5">#5</option><option value="UNRANKED">Quitar del Ranking</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-red" style="width: 100%; margin-top: 15px;">Actualizar Ranking</button>
                 </form>
-            </div>
-        </div>
 
-        <!-- CREAR EVENTO -->
-        <div id="create-event-section" class="section">
-            <div class="form-container">
-                <h3 style="margin-bottom: 15px; text-transform: uppercase; color: var(--accent-gold); text-align: center;">Crear Evento</h3>
-                <form id="eventForm" onsubmit="addEvent(event)">
-                    <div class="form-grid" style="grid-template-columns: 1fr;">
-                        <div class="form-group"><label>Nombre del Evento</label><input type="text" id="eventName" required placeholder="Ej. UTC 1"></div>
-                        <div class="form-group"><label>Fecha</label><input type="text" id="eventDate" required placeholder="Ej. 13 de Abril"></div>
-                        
-                        <div style="background: #111; padding: 15px; border-radius: 6px; border: 1px solid #222;">
-                            <label style="color: var(--accent-gold); margin-bottom: 10px;">Añadir Pelea:</label>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
-                                <div class="form-group"><label>Esquina Roja</label><select id="fighterRed"></select></div>
-                                <div class="form-group"><label>Esquina Azul</label><select id="fighterBlue"></select></div>
+                <!-- Formulario: Crear Evento -->
+                <form id="formEvent" style="display: none;" onsubmit="publishEvent(event)">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Nombre del Evento</label><input type="text" id="ev_name" required placeholder="Ej. UTC 1"></div>
+                        <div class="form-group"><label>Fecha</label><input type="text" id="ev_date" required placeholder="Ej. 13 de Abril"></div>
+                    </div>
+                    <div style="background: #111; padding: 15px; border-radius: 6px; border: 1px solid #333; margin-bottom: 15px;">
+                        <h4 style="color: var(--accent-gold); margin-bottom: 10px; font-family: var(--font-title); text-transform: uppercase;">Añadir Pelea</h4>
+                        <div class="form-grid">
+                            <div class="form-group"><label style="color:#ff4444;">Esquina Roja</label><select id="ev_red"></select></div>
+                            <div class="form-group"><label style="color:#4488ff;">Esquina Azul</label><select id="ev_blue"></select></div>
+                            <div class="form-group">
+                                <label>Resultado</label>
+                                <select id="ev_res">
+                                    <option value="pending">⏳ En Espera</option>
+                                    <option value="red">🔴 Ganó Roja</option>
+                                    <option value="blue">🔵 Ganó Azul</option>
+                                </select>
                             </div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                <div class="form-group">
-                                    <label>Estado / Resultado</label>
-                                    <select id="fightStatus">
-                                        <option value="pending">⏳ En Espera (Próximamente)</option>
-                                        <option value="red">🔴 Ganó Roja</option>
-                                        <option value="blue">🔵 Ganó Azul</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label>Método de Victoria</label>
-                                    <select id="fightMethod">
-                                        <option value="-">-</option>
-                                        <option value="KO / TKO">KO / TKO</option>
-                                        <option value="Sumisión">Sumisión</option>
-                                        <option value="Decisión Unánime">Decisión Unánime</option>
-                                        <option value="Decisión Dividida">Decisión Dividida</option>
-                                        <option value="No se realizó">No se realizó</option>
-                                        <option value="No contest">No contest</option>
-                                    </select>
-                                </div>
+                            <div class="form-group">
+                                <label>Método</label>
+                                <select id="ev_method">
+                                    <option value="-">-</option><option value="KO / TKO">KO / TKO</option>
+                                    <option value="Sumisión">Sumisión</option><option value="Decisión Unánime">Decisión Unánime</option>
+                                    <option value="Decisión Dividida">Decisión Dividida</option>
+                                    <option value="No se realizo">No se realizo</option><option value="No contest">No contest</option>
+                                </select>
                             </div>
-                            <button type="button" class="action-btn" style="background-color: #222; color: var(--accent-gold); border: 1px solid #444; margin-top: 10px;" onclick="addFightToCurrentList()">➕ Agregar este combate</button>
                         </div>
-
-                        <div class="form-group">
-                            <label>Combates Agregados:</label>
-                            <div id="tempFightsList" style="background-color: #111; padding: 10px; border-radius: 4px; border: 1px solid #222; min-height: 40px; font-size: 0.85rem; color: var(--text-muted);">Ningún combate en la lista.</div>
-                        </div>
+                        <button type="button" class="btn btn-dark" style="width: 100%;" onclick="addFightToQueue()">+ Agregar Pelea</button>
                     </div>
-                    <button type="submit" style="margin-top: 20px;">Publicar Cartelera</button>
+                    <div class="form-group full">
+                        <label>Lista de Peleas</label>
+                        <div id="ev_queue" style="background:#000; padding:10px; border-radius:4px; border:1px solid #333; min-height: 50px; font-size:0.9rem;">Vacío</div>
+                    </div>
+                    <div style="color: #ff4444; font-size: 0.85rem; margin-bottom: 15px; font-weight: bold;">
+                        ⚠️ Al publicar el evento, si hay ganadores asignados, sus récords (W-L) se actualizarán automáticamente.
+                    </div>
+                    <button type="submit" class="btn btn-red" style="width: 100%;">Publicar Evento</button>
                 </form>
+
             </div>
         </div>
     </div>
 
+    <!-- LOGICA JAVASCRIPT -->
     <script>
+        // CONFIGURACIÓN DE FIREBASE (No cambiar)
         const firebaseConfig = {
             apiKey: "AIzaSyC4ot99oNRT6b86v2tnnewkr-XNe5rz6uA",
             authDomain: "ufc-rankings.firebaseapp.com",
@@ -284,363 +370,435 @@
             appId: "1:280619573072:web:a4e67c6d88820569461655",
             measurementId: "G-BGDENZW7VL"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // ESTADO GLOBAL
         let isAdmin = false;
         let fighters = [];
         let events = [];
+        let settings = { heroImg: '', docLink: '' };
         let tempFights = [];
 
-        db.ref('ufc_data/fighters').on('value', (snapshot) => {
-            const data = snapshot.val();
-            fighters = data ? Object.values(data) : getInitialFightersData();
-            if (!data) { db.ref('ufc_data/fighters').set(fighters); }
-            renderFighters();
+        // LECTURA DE BASE DE DATOS
+        db.ref('ufc_data/settings').on('value', snap => {
+            if(snap.val()) settings = snap.val();
+            applySettings();
+        });
+
+        db.ref('ufc_data/fighters').on('value', snap => {
+            fighters = snap.val() ? Object.values(snap.val()) : [];
+            renderRoster();
             renderRankings();
         });
 
-        db.ref('ufc_data/events').on('value', (snapshot) => {
-            const data = snapshot.val();
-            events = data ? Object.values(data) : [];
+        db.ref('ufc_data/events').on('value', snap => {
+            events = snap.val() ? Object.values(snap.val()) : [];
             renderEvents();
         });
 
-        function getInitialFightersData() {
-            return [
-                { id: 1, name: "Thiago Monzón", record: "28-1-1", age: "17", height: "5'6\" (170 cm)", weight: "205 lbs", reach: "172 cm", stance: "Cambiada", nationality: "URU", style: "BJJ, Taekwondo y Karate tradicional", rankings: { "Pesado (Heavyweight)": "2", "Wélter (Welterweight)": "3", "Ligero (Lightweight)": "2", "Pluma (Featherweight)": "7", "Gallo (Bantamweight)": "7", "Semipesado (Light Heavyweight)": "C" } },
-                { id: 2, name: "Santiago Vivas", record: "14-0-2", age: "18", height: "5'6\" (170 cm)", weight: "205 lbs", reach: "170 cm", stance: "Ortodoxa", nationality: "URU", style: "Taekwondo, Karate, Kenpo y Boxeo", rankings: { "Pesado (Heavyweight)": "6", "Wélter (Welterweight)": "1", "Ligero (Lightweight)": "1", "Pluma (Featherweight)": "1", "Gallo (Bantamweight)": "1", "Semipesado (Light Heavyweight)": "1" } },
-                { id: 3, name: "Santiago Carro", record: "31-0-0", age: "17", height: "6'1\" (185 cm)", weight: "205 lbs", reach: "190 cm", stance: "Ortodoxa", nationality: "URU", style: "Sambo, Wrestling, Grappling y Muay Thai", rankings: { "Pesado (Heavyweight)": "3", "Wélter (Welterweight)": "C", "Ligero (Lightweight)": "C", "Pluma (Featherweight)": "3", "Gallo (Bantamweight)": "3", "Semipesado (Light Heavyweight)": "2" } }
-            ];
-        }
-
+        // FUNCIONES DE SINCRONIZACIÓN
         function syncFighters() { db.ref('ufc_data/fighters').set(fighters); }
         function syncEvents() { db.ref('ufc_data/events').set(events); }
+        function syncSettings() { db.ref('ufc_data/settings').set(settings); }
 
+        // AUTENTICACIÓN
         function toggleAuth() {
             if (!isAdmin) {
-                let password = prompt("Contraseña de Administrador:");
-                if (password === "UFCUTU_2MH") { isAdmin = true; alert("¡Modo Admin activado!"); }
-                else if (password !== null) { alert("Contraseña incorrecta."); return; }
-                else { return; }
+                let psw = prompt("Contraseña de Admin:");
+                if (psw === "UFCUTU_2MH") { 
+                    isAdmin = true; 
+                    document.getElementById('adminControls').style.display = 'flex';
+                    document.getElementById('authBtn').innerText = 'Salir Admin';
+                    document.getElementById('authBtn').classList.replace('btn-gold', 'btn-red');
+                    renderRoster(); renderEvents();
+                } else if (psw !== null) { alert("Incorrecto."); }
             } else {
                 isAdmin = false;
-                switchTab('roster');
-                alert("Sesión cerrada.");
+                document.getElementById('adminControls').style.display = 'none';
+                document.getElementById('authBtn').innerText = 'Ser Admin';
+                document.getElementById('authBtn').classList.replace('btn-red', 'btn-gold');
+                renderRoster(); renderEvents();
             }
-            updateAuthUI();
         }
 
-        function updateAuthUI() {
-            document.getElementById('userStatusText').innerText = isAdmin ? "Admin 🛡️" : "Visitante";
-            const authBtn = document.getElementById('authBtn');
-            authBtn.innerText = isAdmin ? "Salir" : "Ser Admin";
-            authBtn.style.backgroundColor = isAdmin ? "#ff4444" : "var(--accent-gold)";
-            authBtn.style.color = isAdmin ? "#fff" : "#000";
-
-            document.getElementById('tabRegisterBtn').style.display = isAdmin ? "block" : "none";
-            document.getElementById('tabRankAdminBtn').style.display = isAdmin ? "block" : "none";
-            document.getElementById('tabEventBtn').style.display = isAdmin ? "block" : "none";
-            renderFighters(); renderRankings(); renderEvents();
+        // APLICAR SETTINGS (HERO & DOC)
+        function applySettings() {
+            if(settings.heroImg) document.getElementById('inicio').style.backgroundImage = `url('${settings.heroImg}')`;
+            
+            let link = settings.docLink || '';
+            // Truco para forzar vista de previsualización en links de google docs si no usan "pub"
+            if(link.includes('docs.google.com') && !link.includes('/pub') && !link.includes('/preview')) {
+                link = link.replace(/\/edit.*$/, '/preview');
+            }
+            document.getElementById('newsIframe').src = link;
         }
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-
-            if (tabName === 'roster') { document.getElementById('roster-section').classList.add('active'); document.querySelectorAll('.tab-btn')[0].classList.add('active'); renderFighters(); }
-            else if (tabName === 'rankings') { document.getElementById('rankings-section').classList.add('active'); document.querySelectorAll('.tab-btn')[1].classList.add('active'); renderRankings(); }
-            else if (tabName === 'events') { document.getElementById('events-section').classList.add('active'); document.querySelectorAll('.tab-btn')[2].classList.add('active'); renderEvents(); }
-            else if (tabName === 'register' && isAdmin) { document.getElementById('register-section').classList.add('active'); document.getElementById('tabRegisterBtn').classList.add('active'); }
-            else if (tabName === 'rankAdmin' && isAdmin) { document.getElementById('rank-admin-section').classList.add('active'); document.getElementById('tabRankAdminBtn').classList.add('active'); populateRankAdminSelects(); }
-            else if (tabName === 'createEvent' && isAdmin) { document.getElementById('create-event-section').classList.add('active'); document.getElementById('tabEventBtn').classList.add('active'); populateFighterSelects(); }
+        // CONTROL DE MODALES
+        function closeModal(e, modalId) {
+            if(e.target.id === modalId) document.getElementById(modalId).classList.remove('active');
         }
 
-        function editFighter(id) {
-            const f = fighters.find(item => item.id === id);
-            if (!f) return;
-
-            document.getElementById('fighterId').value = f.id;
-            document.getElementById('name').value = f.name || '';
-            document.getElementById('record').value = f.record || '';
-            document.getElementById('age').value = f.age || '';
-            document.getElementById('height').value = f.height || '';
-            document.getElementById('weight').value = f.weight || '';
-            document.getElementById('reach').value = f.reach || '';
-            document.getElementById('stance').value = f.stance || '';
-            document.getElementById('nationality').value = f.nationality || '';
-            document.getElementById('style').value = f.style || '';
-
-            document.getElementById('formTitle').innerText = "Editar Luchador";
-            switchTab('register');
+        function openAdminModal(type) {
+            if(!isAdmin) return;
+            document.getElementById('adminModal').classList.add('active');
+            
+            // Ocultar todos los forms
+            ['formSettings', 'formFighter', 'formRank', 'formEvent'].forEach(id => document.getElementById(id).style.display = 'none');
+            
+            if(type === 'settings') {
+                document.getElementById('adminModalTitle').innerText = 'Configuración Inicio';
+                document.getElementById('formSettings').style.display = 'block';
+                document.getElementById('setHeroImg').value = settings.heroImg || '';
+                document.getElementById('setDocLink').value = settings.docLink || '';
+            } 
+            else if(type === 'fighter') {
+                document.getElementById('adminModalTitle').innerText = 'Registrar Peleador';
+                document.getElementById('formFighter').style.display = 'block';
+                document.getElementById('formFighter').reset();
+                document.getElementById('f_id').value = '';
+            }
+            else if(type === 'rank') {
+                document.getElementById('adminModalTitle').innerText = 'Gestión de Rankings';
+                document.getElementById('formRank').style.display = 'block';
+                let sel = document.getElementById('r_fighter'); sel.innerHTML = '';
+                fighters.forEach(f => sel.innerHTML += `<option value="${f.id}">${f.name}</option>`);
+            }
+            else if(type === 'event') {
+                document.getElementById('adminModalTitle').innerText = 'Crear Cartelera';
+                document.getElementById('formEvent').style.display = 'block';
+                document.getElementById('formEvent').reset();
+                tempFights = []; renderTempFights();
+                
+                let sRed = document.getElementById('ev_red'); let sBlue = document.getElementById('ev_blue');
+                sRed.innerHTML = ''; sBlue.innerHTML = '';
+                fighters.forEach(f => {
+                    let opt = `<option value="${f.name}">${f.name}</option>`;
+                    sRed.innerHTML += opt; sBlue.innerHTML += opt;
+                });
+            }
         }
 
+        // GUARDAR SETTINGS
+        function saveSettings(e) {
+            e.preventDefault();
+            settings.heroImg = document.getElementById('setHeroImg').value;
+            settings.docLink = document.getElementById('setDocLink').value;
+            syncSettings();
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        // CALCULAR RECORD TOTAL DINAMICAMENTE (Base + Eventos)
+        // Esto asegura que si borras un evento, el récord se ajusta solo.
+        function getCalculatedRecord(fighterName, baseRecord) {
+            let [w, l, d] = (baseRecord || '0-0-0').split('-').map(n => parseInt(n) || 0);
+            
+            events.forEach(ev => {
+                ev.fights.forEach(fight => {
+                    // Solo contamos peleas finalizadas que no sean No Contest o No Realizadas
+                    if (fight.method === 'No contest' || fight.method === 'No se realizo' || fight.status === 'pending') return;
+                    
+                    if (fight.red === fighterName) {
+                        if (fight.status === 'red') w++;
+                        if (fight.status === 'blue') l++;
+                    } else if (fight.blue === fighterName) {
+                        if (fight.status === 'blue') w++;
+                        if (fight.status === 'red') l++;
+                    }
+                });
+            });
+            return `${w}-${l}-${d}`;
+        }
+
+        // GUARDAR PELEADOR
         function saveFighter(e) {
             e.preventDefault();
-            if (!isAdmin) return;
+            let idField = document.getElementById('f_id').value;
+            let existing = fighters.find(f => f.id == idField);
 
-            const idField = document.getElementById('fighterId').value;
-            const existing = fighters.find(f => f.id === parseInt(idField));
-
-            const fighterData = {
+            let fighterData = {
                 id: idField ? parseInt(idField) : Date.now(),
-                name: document.getElementById('name').value,
-                record: document.getElementById('record').value,
-                age: document.getElementById('age').value,
-                height: document.getElementById('height').value,
-                weight: document.getElementById('weight').value,
-                reach: document.getElementById('reach').value,
-                stance: document.getElementById('stance').value,
-                nationality: document.getElementById('nationality').value,
-                style: document.getElementById('style').value,
+                name: document.getElementById('f_name').value,
+                record: document.getElementById('f_record').value, // Funciona como Récord Base
+                imageUrl: document.getElementById('f_img').value || 'https://via.placeholder.com/400x500/111/444?text=FOTO',
+                age: document.getElementById('f_age').value,
+                height: document.getElementById('f_height').value,
+                weight: document.getElementById('f_weight').value,
+                reach: document.getElementById('f_reach').value,
+                stance: document.getElementById('f_stance').value,
+                nationality: document.getElementById('f_nation').value,
+                style: document.getElementById('f_style').value,
                 rankings: existing ? (existing.rankings || {}) : {}
             };
 
-            if (idField) { 
-                fighters = fighters.map(f => f.id === fighterData.id ? fighterData : f); 
-            } else { 
-                fighters.push(fighterData); 
-            }
+            if (idField) fighters = fighters.map(f => f.id === fighterData.id ? fighterData : f);
+            else fighters.push(fighterData);
 
             syncFighters();
-            document.getElementById('fighterForm').reset();
-            document.getElementById('fighterId').value = '';
-            document.getElementById('formTitle').innerText = "Registrar / Editar Luchador";
-            switchTab('roster');
+            document.getElementById('adminModal').classList.remove('active');
+        }
+
+        function editFighter(id) {
+            let f = fighters.find(x => x.id === id);
+            if(!f) return;
+            openAdminModal('fighter');
+            document.getElementById('adminModalTitle').innerText = 'Editar Peleador';
+            document.getElementById('f_id').value = f.id;
+            document.getElementById('f_name').value = f.name;
+            document.getElementById('f_record').value = f.record;
+            document.getElementById('f_img').value = f.imageUrl || '';
+            document.getElementById('f_age').value = f.age || '';
+            document.getElementById('f_height').value = f.height || '';
+            document.getElementById('f_weight').value = f.weight || '';
+            document.getElementById('f_reach').value = f.reach || '';
+            document.getElementById('f_stance').value = f.stance || '';
+            document.getElementById('f_nation').value = f.nationality || '';
+            document.getElementById('f_style').value = f.style || '';
         }
 
         function deleteFighter(id) {
-            if (!isAdmin) return;
-            if (confirm("¿Seguro que deseas eliminar este luchador del sistema?")) {
-                fighters = fighters.filter(f => f.id !== id);
+            if(confirm("¿Borrar peleador por completo?")) {
+                fighters = fighters.filter(x => x.id !== id);
                 syncFighters();
             }
         }
 
-        function renderFighters() {
-            const grid = document.getElementById('fightersGrid');
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        // RENDER ROSTER
+        function renderRoster() {
+            let grid = document.getElementById('rosterGrid');
+            let q = document.getElementById('searchInput').value.toLowerCase();
             grid.innerHTML = '';
-
-            let filtered = fighters.filter(f => f.name.toLowerCase().includes(searchQuery));
-            if (filtered.length === 0) { grid.innerHTML = `<div class="empty-msg">No se encontraron peleadores.</div>`; return; }
-
-            filtered.forEach(fighter => {
-                const card = document.createElement('div');
-                card.className = 'fighter-card';
-                let adminActions = isAdmin ? `
-                    <div class="card-admin-actions">
-                        <button class="card-btn edit-btn" onclick="editFighter(${fighter.id})">Editar</button>
-                        <button class="card-btn delete-btn" onclick="deleteFighter(${fighter.id})">Borrar</button>
+            
+            let filtered = fighters.filter(f => f.name.toLowerCase().includes(q));
+            filtered.forEach(f => {
+                let calcRecord = getCalculatedRecord(f.name, f.record);
+                let adminBtns = isAdmin ? `
+                    <div style="position:absolute; top:10px; right:10px; z-index:5; display:flex; gap:5px;">
+                        <button class="btn btn-gold" style="padding:4px 8px; font-size:0.8rem;" onclick="event.stopPropagation(); editFighter(${f.id})">✏️</button>
+                        <button class="btn btn-red" style="padding:4px 8px; font-size:0.8rem;" onclick="event.stopPropagation(); deleteFighter(${f.id})">🗑️</button>
                     </div>
                 ` : '';
 
-                card.innerHTML = `
-                    <div class="fighter-header">
-                        <div class="fighter-name">${fighter.name}</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">${fighter.nationality || 'URU'}</div>
+                grid.innerHTML += `
+                    <div class="fighter-card" onclick="openFighterProfile(${f.id})">
+                        ${adminBtns}
+                        <div class="fighter-img-container">
+                            <img src="${f.imageUrl || 'https://via.placeholder.com/400x500/111/444?text=UTC'}" alt="${f.name}">
+                        </div>
+                        <div class="fighter-info">
+                            <div class="fighter-info-name">${f.name}</div>
+                            <div class="fighter-info-record">${calcRecord}</div>
+                            <div style="font-size:0.8rem; color:#888; margin-top:5px;">${f.nationality || 'URU'}</div>
+                        </div>
                     </div>
-                    <div class="fighter-body">
-                        <div class="record-box">REC: ${fighter.record}</div>
-                        <div class="stats-section-title">Detalles</div>
-                        <div class="stat-row"><span class="stat-label">Edad / Altura:</span><span class="stat-value">${fighter.age} años / ${fighter.height}</span></div>
-                        <div class="stat-row"><span class="stat-label">Peso / Alcance:</span><span class="stat-value">${fighter.weight} / ${fighter.reach}</span></div>
-                        <div class="stat-row"><span class="stat-label">Guardia:</span><span class="stat-value">${fighter.stance}</span></div>
-                        <div class="stats-section-title">Estilo / Armas</div>
-                        <div style="font-size: 0.8rem; color: var(--text-color);">${fighter.style}</div>
-                    </div>
-                    ${adminActions}
                 `;
-                grid.appendChild(card);
             });
         }
 
-        function populateRankAdminSelects() {
-            const select = document.getElementById('rankFighterSelect');
-            select.innerHTML = '';
-            fighters.forEach(f => { select.innerHTML += `<option value="${f.id}">${f.name}</option>`; });
+        // PERFIL DE PELEADOR (MODAL)
+        function openFighterProfile(id) {
+            let f = fighters.find(x => x.id === id);
+            if(!f) return;
+            
+            let calcRecord = getCalculatedRecord(f.name, f.record);
+            
+            // Buscar historial en eventos
+            let historyHTML = '';
+            events.forEach(ev => {
+                ev.fights.forEach(fight => {
+                    if(fight.red === f.name || fight.blue === f.name) {
+                        let isRed = fight.red === f.name;
+                        let opp = isRed ? fight.blue : fight.red;
+                        
+                        let resultClass = ''; let resultText = 'EN ESPERA';
+                        if(fight.status !== 'pending') {
+                            if((isRed && fight.status === 'red') || (!isRed && fight.status === 'blue')) {
+                                resultClass = 'win'; resultText = 'VICTORIA';
+                            } else {
+                                resultClass = 'loss'; resultText = 'DERROTA';
+                            }
+                            if(fight.method === 'No contest' || fight.method === 'No se realizo') {
+                                resultClass = ''; resultText = fight.method.toUpperCase();
+                            }
+                        }
+
+                        historyHTML += `
+                            <div class="history-item ${resultClass}">
+                                <b style="color:var(--accent-gold);">${ev.name}</b>: vs ${opp} <br>
+                                <span style="font-size:0.8rem; font-weight:bold;">${resultText} ${fight.method !== '-' && fight.status !== 'pending' ? '('+fight.method+')' : ''}</span>
+                            </div>
+                        `;
+                    }
+                });
+            });
+            if(!historyHTML) historyHTML = '<div style="color:#888; font-size:0.9rem;">Sin historial registrado.</div>';
+
+            document.getElementById('profileContent').innerHTML = `
+                <div class="profile-header">
+                    <img src="${f.imageUrl || 'https://via.placeholder.com/400x500/111/444?text=FOTO'}" class="profile-img">
+                    <div class="profile-title-area">
+                        <div class="profile-name">${f.name}</div>
+                        <div class="profile-record">REC: ${calcRecord}</div>
+                        <div style="color: #888; margin-top:5px; font-weight:bold;">${f.nationality || ''}</div>
+                    </div>
+                </div>
+                <div class="profile-body">
+                    <div>
+                        <div class="profile-section-title">Estadísticas</div>
+                        <div class="stat-grid">
+                            <div class="stat-item"><span class="stat-label">Edad</span><span class="stat-val">${f.age || '-'}</span></div>
+                            <div class="stat-item"><span class="stat-label">Altura</span><span class="stat-val">${f.height || '-'}</span></div>
+                            <div class="stat-item"><span class="stat-label">Peso</span><span class="stat-val">${f.weight || '-'}</span></div>
+                            <div class="stat-item"><span class="stat-label">Alcance</span><span class="stat-val">${f.reach || '-'}</span></div>
+                            <div class="stat-item" style="grid-column: 1 / -1;"><span class="stat-label">Guardia</span><span class="stat-val">${f.stance || '-'}</span></div>
+                            <div class="stat-item" style="grid-column: 1 / -1;"><span class="stat-label">Estilo / Armas</span><span class="stat-val" style="color:var(--accent-gold);">${f.style || '-'}</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="profile-section-title">Historial de Peleas</div>
+                        <div class="fight-history-list">${historyHTML}</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('fighterProfileModal').classList.add('active');
         }
 
-        function updateRankingPosition(e) {
+        // RANKINGS LOGICA
+        function updateRanking(e) {
             e.preventDefault();
-            if (!isAdmin) return;
+            let f_id = parseInt(document.getElementById('r_fighter').value);
+            let cat = document.getElementById('r_cat').value;
+            let pos = document.getElementById('r_pos').value;
+            
+            let target = fighters.find(x => x.id === f_id);
+            if(!target.rankings) target.rankings = {};
 
-            const fighterId = parseInt(document.getElementById('rankFighterSelect').value);
-            const category = document.getElementById('rankCategorySelect').value;
-            const newPos = document.getElementById('rankPositionSelect').value;
-
-            const targetFighter = fighters.find(f => f.id === fighterId);
-            if (!targetFighter.rankings) targetFighter.rankings = {};
-
-            if (newPos === 'C') {
-                fighters.forEach(f => {
-                    if (f.rankings && f.rankings[category] === 'C') { delete f.rankings[category]; }
-                });
+            if(pos === 'C') {
+                fighters.forEach(f => { if(f.rankings && f.rankings[cat] === 'C') delete f.rankings[cat]; });
             }
 
-            if (newPos === 'UNRANKED') { delete targetFighter.rankings[category]; } 
-            else { targetFighter.rankings[category] = newPos; }
+            if(pos === 'UNRANKED') delete target.rankings[cat];
+            else target.rankings[cat] = pos;
 
             syncFighters();
-            alert(`¡Ranking de ${targetFighter.name} actualizado!`);
-            switchTab('roster');
+            document.getElementById('adminModal').classList.remove('active');
         }
 
         function renderRankings() {
-            const container = document.getElementById('rankingsContainer');
+            let container = document.getElementById('rankingsGrid');
             container.innerHTML = '';
+            const cats = ["Pesado (Heavyweight)", "Semipesado (Light Heavyweight)", "Wélter (Welterweight)", "Ligero (Lightweight)", "Pluma (Featherweight)", "Gallo (Bantamweight)"];
 
-            const categories = ["Pesado (Heavyweight)", "Semipesado (Light Heavyweight)", "Wélter (Welterweight)", "Ligero (Lightweight)", "Pluma (Featherweight)", "Gallo (Bantamweight)"];
+            cats.forEach(cat => {
+                let ranked = fighters.filter(f => f.rankings && f.rankings[cat] && f.rankings[cat] !== 'UNRANKED');
+                if(ranked.length === 0) return;
 
-            categories.forEach(cat => {
-                let divFighters = fighters.filter(f => f.rankings && f.rankings[cat] && f.rankings[cat] !== 'UNRANKED');
-                if (divFighters.length === 0) return;
+                ranked.sort((a,b) => (a.rankings[cat] === 'C' ? -1 : (b.rankings[cat] === 'C' ? 1 : parseInt(a.rankings[cat]) - parseInt(b.rankings[cat]))));
 
-                divFighters.sort((a, b) => {
-                    let rA = a.rankings[cat];
-                    let rB = b.rankings[cat];
-                    if (rA === 'C') return -1;
-                    if (rB === 'C') return 1;
-                    return parseInt(rA) - parseInt(rB);
-                });
-
-                let rowsHTML = divFighters.map(f => {
-                    let pos = f.rankings[cat];
-                    let isChamp = pos === 'C';
-                    return `
-                        <div class="ranking-row ${isChamp ? 'champion-row' : ''}">
-                            <div class="rank-pos">${isChamp ? '👑 C' : '#' + pos}</div>
-                            <div>
-                                <div class="rank-fighter-name">${f.name}</div>
-                                <div class="rank-record">Récord: ${f.record}</div>
-                            </div>
-                            <div class="rank-record">${f.nationality || 'URU'}</div>
-                            <div class="rank-style">${f.style || '-'}</div>
+                let rows = ranked.map(f => `
+                    <div class="ranking-item ${f.rankings[cat] === 'C' ? 'rank-champ' : ''}" onclick="openFighterProfile(${f.id})">
+                        <div class="rank-num">${f.rankings[cat] === 'C' ? 'C' : f.rankings[cat]}</div>
+                        <div class="rank-info">
+                            <div class="rank-name">${f.name}</div>
+                            <div class="rank-rec">${getCalculatedRecord(f.name, f.record)}</div>
                         </div>
-                    `;
-                }).join('');
+                    </div>
+                `).join('');
 
                 container.innerHTML += `
-                    <div class="ranking-table-container">
-                        <div class="ranking-division-header"><span>${cat}</span></div>
-                        <div>${rowsHTML}</div>
+                    <div class="ranking-card">
+                        <div class="ranking-header">${cat}</div>
+                        <div class="ranking-list">${rows}</div>
                     </div>
                 `;
             });
         }
 
-        function populateFighterSelects() {
-            const selectRed = document.getElementById('fighterRed');
-            const selectBlue = document.getElementById('fighterBlue');
-            selectRed.innerHTML = ''; selectBlue.innerHTML = '';
-
-            fighters.forEach(f => {
-                let opt = `<option value="${f.name}">${f.name}</option>`;
-                selectRed.innerHTML += opt; selectBlue.innerHTML += opt;
-            });
+        // LOGICA DE EVENTOS (CARTELERAS)
+        function addFightToQueue() {
+            let r = document.getElementById('ev_red').value;
+            let b = document.getElementById('ev_blue').value;
+            let s = document.getElementById('ev_res').value;
+            let m = document.getElementById('ev_method').value;
+            if(r === b) return alert("Selecciona peleadores distintos");
+            tempFights.push({red: r, blue: b, status: s, method: m});
+            renderTempFights();
         }
 
-        function addFightToCurrentList() {
-            const red = document.getElementById('fighterRed').value;
-            const blue = document.getElementById('fighterBlue').value;
-            const status = document.getElementById('fightStatus').value;
-            const method = document.getElementById('fightMethod').value;
-
-            if (red === blue) { alert("Un luchador no puede pelear contra sí mismo."); return; }
-            
-            tempFights.push({ red, blue, status, method });
-            renderTempFightsList();
+        function renderTempFights() {
+            let box = document.getElementById('ev_queue');
+            if(tempFights.length === 0) { box.innerHTML = 'Vacío'; return; }
+            box.innerHTML = tempFights.map((f, i) => `
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px; border-bottom:1px solid #333; padding-bottom:5px;">
+                    <span><b style="color:#ff4444">${f.red}</b> vs <b style="color:#4488ff">${f.blue}</b> (${f.status})</span>
+                    <button type="button" style="background:red; color:white; border:none; padding:2px 5px; border-radius:3px; cursor:pointer;" onclick="tempFights.splice(${i},1); renderTempFights()">X</button>
+                </div>
+            `).join('');
         }
 
-        function removeTempFight(index) {
-            tempFights.splice(index, 1);
-            renderTempFightsList();
-        }
-
-        function renderTempFightsList() {
-            const listContainer = document.getElementById('tempFightsList');
-            if (tempFights.length === 0) {
-                listContainer.innerHTML = 'Ningún combate en la lista.';
-                return;
-            }
-
-            listContainer.innerHTML = tempFights.map((f, i) => {
-                let resText = f.status === 'pending' ? '⏳ En Espera' : (f.status === 'red' ? `🔴 Ganador: ${f.red}` : `🔵 Ganador: ${f.blue}`);
-                return `
-                    <div style="display:flex; justify-between; align-items:center; margin-bottom: 6px; border-bottom: 1px solid #222; padding-bottom: 4px;">
-                        <span>#${i+1}: <b style="color:#ff4444;">${f.red}</b> vs <b style="color:#4488ff;">${f.blue}</b> (${resText})</span>
-                        <button type="button" style="background:#ff4444; color:white; border:none; padding:2px 6px; border-radius:3px; cursor:pointer;" onclick="removeTempFight(${i})">X</button>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function addEvent(e) {
+        function publishEvent(e) {
             e.preventDefault();
-            if (!isAdmin || tempFights.length === 0) { alert("Debes agregar al menos una pelea al evento."); return; }
-
+            if(tempFights.length === 0) return alert("Agrega peleas al evento");
+            
             events.push({
                 id: Date.now(),
-                name: document.getElementById('eventName').value,
-                date: document.getElementById('eventDate').value,
+                name: document.getElementById('ev_name').value,
+                date: document.getElementById('ev_date').value,
                 fights: [...tempFights]
             });
-
-            syncEvents();
-            document.getElementById('eventForm').reset();
-            tempFights = [];
-            renderTempFightsList();
-            switchTab('events');
-        }
-
-        function renderEvents() {
-            const container = document.getElementById('eventsContainer');
-            container.innerHTML = '';
-            if (events.length === 0) { container.innerHTML = `<div class="empty-msg">No hay eventos programados.</div>`; return; }
+            syncEvents(); 
+            // RenderRoster y RenderRankings se actualizan automáticamente al cambiar events 
+            // por la forma en que armé getCalculatedRecord, pero forzamos render para refrescar UI
+            renderRoster(); 
+            renderRankings();
             
-            events.forEach(ev => {
-                let fightsHTML = ev.fights.map(f => {
-                    let resultBadge = '';
-                    if (f.status === 'pending') {
-                        resultBadge = `<div class="fight-result-badge" style="color: var(--accent-gold);">⏳ Estado: En Espera</div>`;
-                    } else if (f.status === 'red') {
-                        resultBadge = `<div class="fight-result-badge"><span class="winner-text">🔴 Ganador: ${f.red}</span> (Vía: ${f.method || 'N/A'})</div>`;
-                    } else if (f.status === 'blue') {
-                        resultBadge = `<div class="fight-result-badge"><span class="winner-text">🔵 Ganador: ${f.blue}</span> (Vía: ${f.method || 'N/A'})</div>`;
-                    }
-
-                    let redCrown = f.status === 'red' ? '👑' : '';
-                    let blueCrown = f.status === 'blue' ? '👑' : '';
-
-                    return `
-                        <div class="fight-row">
-                            <div><div class="fighter-corner-red">${f.red} ${redCrown}</div><div class="corner-sub">Esquina Roja</div></div>
-                            <div class="vs-badge">VS</div>
-                            <div><div class="fighter-corner-blue">${f.blue} ${blueCrown}</div><div class="corner-sub">Esquina Azul</div></div>
-                            ${resultBadge}
-                        </div>
-                    `;
-                }).join('');
-
-                container.innerHTML += `
-                    <div class="event-card">
-                        <div class="event-header">
-                            <div><div class="event-title">${ev.name}</div><div class="event-date">📅 ${ev.date}</div></div>
-                            ${isAdmin ? `<button class="card-btn delete-btn" style="padding: 5px 10px; border-radius: 4px; max-width: 100px;" onclick="deleteEvent(${ev.id})">Borrar Evento</button>` : ''}
-                        </div>
-                        <div class="fights-list">${fightsHTML}</div>
-                    </div>
-                `;
-            });
+            document.getElementById('adminModal').classList.remove('active');
         }
 
         function deleteEvent(id) {
-            if (!isAdmin) return;
-            if (confirm("¿Seguro que deseas borrar este evento completo?")) {
+            if(confirm("¿Borrar el evento entero? Esto quitará las victorias/derrotas de este evento de los récords de los peleadores.")) {
                 events = events.filter(e => e.id !== id);
                 syncEvents();
+                renderRoster(); // Refrescar récords calculados
+                renderRankings();
             }
+        }
+
+        function renderEvents() {
+            let grid = document.getElementById('eventsGrid');
+            grid.innerHTML = '';
+            
+            // Ordenar de más nuevo a más viejo
+            [...events].reverse().forEach(ev => {
+                let fightsHTML = ev.fights.map(f => {
+                    let resHtml = '';
+                    if(f.status === 'pending') resHtml = `<div class="fight-result" style="color:#fff;">⏳ EN ESPERA</div>`;
+                    else if(f.status === 'red') resHtml = `<div class="fight-result">🔴 GANADOR: ${f.red} <span style="color:#fff">(${f.method})</span></div>`;
+                    else if(f.status === 'blue') resHtml = `<div class="fight-result">🔵 GANADOR: ${f.blue} <span style="color:#fff">(${f.method})</span></div>`;
+                    
+                    return `
+                        <div class="fight-row">
+                            <div class="fighter-name-event red-corner">${f.red} ${f.status==='red'?'👑':''}</div>
+                            <div class="vs">VS</div>
+                            <div class="fighter-name-event blue-corner">${f.status==='blue'?'👑':''} ${f.blue}</div>
+                            ${resHtml}
+                        </div>
+                    `;
+                }).join('');
+
+                grid.innerHTML += `
+                    <div class="event-card">
+                        <div class="event-header">
+                            <div>
+                                <div class="event-name">${ev.name}</div>
+                                <div class="event-date">📅 ${ev.date}</div>
+                            </div>
+                            ${isAdmin ? `<button class="btn btn-red" onclick="deleteEvent(${ev.id})">Borrar Evento</button>` : ''}
+                        </div>
+                        <div class="fight-list">${fightsHTML}</div>
+                    </div>
+                `;
+            });
         }
     </script>
 </body>
