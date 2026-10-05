@@ -528,12 +528,12 @@
                 if (psw === "UFCUTU_2MH") { 
                     isAdmin = true; document.getElementById('adminControls').style.display = 'flex';
                     document.getElementById('authBtn').innerText = 'Salir Admin'; document.getElementById('authBtn').classList.replace('btn-gold', 'btn-red');
-                    renderRoster(); renderEvents(); renderHighlights();
+                    renderRoster(); renderEvents(); renderHighlights(); renderRankings();
                 } else if (psw !== null) { alert("Incorrecto."); }
             } else {
                 isAdmin = false; document.getElementById('adminControls').style.display = 'none';
                 document.getElementById('authBtn').innerText = 'Ser Admin'; document.getElementById('authBtn').classList.replace('btn-red', 'btn-gold');
-                renderRoster(); renderEvents(); renderHighlights();
+                renderRoster(); renderEvents(); renderHighlights(); renderRankings();
             }
         }
 
@@ -811,7 +811,7 @@
             fighters.filter(f => f.name.toLowerCase().includes(q)).forEach(f => {
                 let adminBtns = isAdmin ? `
                     <div style="position:absolute; top:10px; right:10px; z-index:5; display:flex; gap:5px;">
-                        <button class="btn btn-gold" style="padding:4px 8px; font-size:0.8rem;" onclick="event.stopPropagation(); editFighter(${f.id})">✏️</button>
+                        <button class="btn btn-gold" style="padding:4px 8px; font-size:0.8rem;" onclick="event.stopPropagation(); editFighter(${f.id})">✏️️</button>
                         <button class="btn btn-red" style="padding:4px 8px; font-size:0.8rem;" onclick="event.stopPropagation(); deleteFighter(${f.id})">🗑️</button>
                     </div>` : '';
                 
@@ -1012,14 +1012,69 @@
                 let ranked = fighters.filter(f => f.rankings && f.rankings[cat] && f.rankings[cat] !== 'UNRANKED');
                 if(ranked.length === 0) return;
                 ranked.sort((a,b) => (a.rankings[cat] === 'C' ? -1 : (b.rankings[cat] === 'C' ? 1 : parseInt(a.rankings[cat]) - parseInt(b.rankings[cat]))));
-                let rows = ranked.map(f => `
-                    <div class="ranking-item ${f.rankings[cat] === 'C' ? 'rank-champ' : ''}" onclick="openFighterProfile(${f.id})">
-                        <div class="rank-num">${f.rankings[cat] === 'C' ? 'C' : f.rankings[cat]}</div>
-                        <div class="rank-info"><div class="rank-name">${f.name}</div><div class="rank-rec">${f.record || '0-0-0'}</div></div>
-                    </div>
-                `).join('');
+                
+                let rows = ranked.map(f => {
+                    let adminBtns = isAdmin ? `
+                        <div style="display:flex; gap:4px; margin-left:10px;" onclick="event.stopPropagation();">
+                            <button class="btn btn-dark" style="padding: 2px 6px; font-size: 0.75rem;" title="Subir posición" onclick="moveRanking(${f.id}, '${cat}', 'up')">▲</button>
+                            <button class="btn btn-dark" style="padding: 2px 6px; font-size: 0.75rem;" title="Bajar posición" onclick="moveRanking(${f.id}, '${cat}', 'down')">▼</button>
+                            <button class="btn btn-red" style="padding: 2px 6px; font-size: 0.75rem;" title="Quitar del ranking" onclick="removeRanking(${f.id}, '${cat}')">✕</button>
+                        </div>
+                    ` : '';
+
+                    return `
+                        <div class="ranking-item ${f.rankings[cat] === 'C' ? 'rank-champ' : ''}" onclick="openFighterProfile(${f.id})">
+                            <div class="rank-num">${f.rankings[cat] === 'C' ? 'C' : f.rankings[cat]}</div>
+                            <div class="rank-info"><div class="rank-name">${f.name}</div><div class="rank-rec">${f.record || '0-0-0'}</div></div>
+                            ${adminBtns}
+                        </div>
+                    `;
+                }).join('');
+
                 container.innerHTML += `<div class="ranking-card"><div class="ranking-header">${cat}</div><div class="ranking-list">${rows}</div></div>`;
             });
+        }
+
+        /* --- NUEVAS FUNCIONES DE DESPLAZAMIENTO DE RANKINGS --- */
+        function moveRanking(fighterId, cat, direction) {
+            let ranked = fighters.filter(f => f.rankings && f.rankings[cat] && f.rankings[cat] !== 'UNRANKED');
+            ranked.sort((a,b) => (a.rankings[cat] === 'C' ? -1 : (b.rankings[cat] === 'C' ? 1 : parseInt(a.rankings[cat]) - parseInt(b.rankings[cat]))));
+            
+            let index = ranked.findIndex(f => f.id === fighterId);
+            if (index === -1) return;
+
+            let targetIndex = direction === 'up' ? index - 1 : index + 1;
+            if (targetIndex < 0 || targetIndex >= ranked.length) return;
+
+            // Intercambiar posiciones
+            let temp = ranked[index];
+            ranked[index] = ranked[targetIndex];
+            ranked[targetIndex] = temp;
+
+            // Reasignar etiquetas estandarizadas (C, 1, 2, 3...)
+            const positions = ['C', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+            ranked.forEach((f, idx) => {
+                if (!f.rankings) f.rankings = {};
+                f.rankings[cat] = positions[idx] || String(idx);
+            });
+
+            syncFighters();
+        }
+
+        function removeRanking(fighterId, cat) {
+            let f = fighters.find(x => x.id === fighterId);
+            if (f && f.rankings && f.rankings[cat]) {
+                delete f.rankings[cat];
+                let remaining = fighters.filter(x => x.rankings && x.rankings[cat] && x.rankings[cat] !== 'UNRANKED');
+                remaining.sort((a,b) => (a.rankings[cat] === 'C' ? -1 : (b.rankings[cat] === 'C' ? 1 : parseInt(a.rankings[cat]) - parseInt(b.rankings[cat]))));
+                
+                const positions = ['C', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'];
+                remaining.forEach((item, idx) => {
+                    item.rankings[cat] = positions[idx] || String(idx);
+                });
+
+                syncFighters();
+            }
         }
 
         function addFightToQueue() {
